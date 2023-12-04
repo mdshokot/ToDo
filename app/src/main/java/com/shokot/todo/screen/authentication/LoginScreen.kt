@@ -180,10 +180,13 @@ fun LoginForm(
                 // Login button
                 Button(
                     onClick = {
-                        //do this when successful login
-                        navController.navigate(Graph.mainAppHelper) {
-                            popUpTo(Graph.authentication) {
-                                inclusive = true
+                        if ((email.trim() == "yao") && (password == "123456")
+                        ) {
+                            //do this when successful login
+                            navController.navigate(Graph.mainAppHelper) {
+                                popUpTo(Graph.authentication) {
+                                    inclusive = true
+                                }
                             }
                         }
                     },
@@ -208,12 +211,10 @@ fun CustomOutlinedTextField(
 ) {
 
     val keyboardController = LocalSoftwareKeyboardController.current
-    var isValid by remember { mutableStateOf(false) }
     OutlinedTextField(
         value = value,
         onValueChange = { text ->
             onValueChange(text)
-            isValid = if (label == R.string.password) text.isNotEmpty() else isEmailValid(text)
         },
         label = { Text(text = stringResource(label)) },
         leadingIcon = { Icon(icon, contentDescription = null) },
@@ -228,7 +229,6 @@ fun CustomOutlinedTextField(
             }
         ),
         modifier = Modifier.fillMaxWidth(),
-        isError = isValid
     )
 
     Spacer(modifier = Modifier.height(space.dp))

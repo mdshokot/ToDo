@@ -30,7 +30,6 @@ fun HomeScreen(navController: NavController) {
     ) {
         DropDownMenu(selectedItem = selectedItem, onSelectedItemChange = { selectedItem = it })
         Spacer(modifier = Modifier.height(5.dp))
-
     }
 }
 
