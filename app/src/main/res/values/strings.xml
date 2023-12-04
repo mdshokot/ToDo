@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">ToDo</string>
+    <string name="app_name" translatable="false">ToDo</string>
+    <string name="login">Accedi</string>
+    <string name="register">Registrazione</string>
+    <string name="email" translatable="false">email</string>
+    <string name="password" translatable="false">password</string>
 </resources>
