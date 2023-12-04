@@ -4,4 +4,14 @@
     <string name="register">Registrazione</string>
     <string name="email" translatable="false">email</string>
     <string name="password" translatable="false">password</string>
+    <!-- Select menu option -->
+    <string name="select_label">Seleziona filtro</string>
+    <string name="all">Tutti</string>
+    <string-array name="task_filter_options">
+        <item>Tutti</item>
+        <item>Preferiti</item>
+        <item>Normali</item>
+        <item>Valore</item>
+    </string-array>
+
 </resources>

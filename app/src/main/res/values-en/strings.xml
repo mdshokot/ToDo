@@ -2,4 +2,13 @@
 <resources>
     <string name="login">Login</string>
     <string name="register">Register</string>
+    <!-- Select menu option -->
+    <string name="select_label">Select filter</string>
+    <string name="all">All</string>
+    <string-array name="task_filter_options">
+        <item>@string/all</item>
+        <item>Favorites</item>
+        <item>Normal</item>
+        <item>Value</item>
+    </string-array>
 </resources>
