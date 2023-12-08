@@ -2,11 +2,14 @@
     <string name="app_name" translatable="false">ToDo</string>
     <string name="login">Accedi</string>
     <string name="register">Registrazione</string>
-    <string name="email" translatable="false">email</string>
-    <string name="password" translatable="false">password</string>
+    <string name="email" translatable="false">Email</string>
+    <string name="password" translatable="false">Password</string>
+    <string name="logout" translatable="false">logout</string>
     <!-- Select menu option -->
     <string name="select_label">Seleziona filtro</string>
     <string name="all">Tutti</string>
+    <string name="before_logout_text">Esci da questo account</string>
+    <string name="before_theme_switch_text">Cambia tema</string>
     <string-array name="task_filter_options">
         <item>Tutti</item>
         <item>Preferiti</item>

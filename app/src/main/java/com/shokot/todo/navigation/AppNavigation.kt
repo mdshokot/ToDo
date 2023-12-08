@@ -1,11 +1,6 @@
 package com.shokot.todo.navigation
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -17,76 +12,60 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.capitalize
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.shokot.todo.ThemeViewModel
 import com.shokot.todo.navigation.graph.authenticationGraph
 import com.shokot.todo.navigation.graph.mainAppGraph
+import com.shokot.todo.utility.Helper
 
 @Composable
-fun AppNavigation() {
-    val navController = rememberNavController();
-    NavHost(navController = navController, startDestination = Graph.authentication) {
-        authenticationGraph(navController)
-        composable(route = Graph.mainAppHelper) {
-            mainAppNavigation()
-        }
-    }
-}
+fun AppNavigation(themeViewModel: ThemeViewModel) {
 
-@Composable
-private fun mainAppNavigation() {
-    val mainAppNavController = rememberNavController()
-    val items = listOf(
-        BottomNavigationItem(MainAppScreen.Home.route, Icons.Filled.Home, Icons.Default.Home),
-        BottomNavigationItem(
-            MainAppScreen.Graph.route,
-            Icons.Filled.DateRange,
-            Icons.Default.DateRange
-        ),
-        BottomNavigationItem(
-            MainAppScreen.Profile.route,
-            Icons.Filled.AccountCircle,
-            Icons.Default.AccountCircle
-        ),
-    )
+    val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
     var selectedItemIndex by rememberSaveable { mutableStateOf(0) }
+    val currentRoute = navBackStackEntry?.destination?.route
 
     Scaffold(
         bottomBar = {
-            NavigationBar {
-                items.forEachIndexed { index, item ->
-                    NavigationBarItem(selected = index == selectedItemIndex,
-                        onClick = {
-                            mainAppNavController.navigate(item.tittle)
-                            selectedItemIndex = index
-                        },
-                        label = { Text(text = item.tittle.replaceFirstChar { it.uppercase() }) },
-                        icon = {
-                            Icon(
-                                imageVector = if (index == selectedItemIndex) item.selectedIcon else item.unselectedIcon,
-                                contentDescription = item.tittle
-                            )
-                        })
+            if(Helper.isMainApp(currentRoute)){
+                NavigationBar {
+                    Helper.bottomNavigationItems.forEachIndexed { index, item ->
+                        NavigationBarItem(selected = index == selectedItemIndex,
+                            onClick = {
+                                navController.navigate(item.tittle)
+                                selectedItemIndex = index
+                            },
+                            label = { Text(text = item.tittle.replaceFirstChar { it.uppercase() }) },
+                            icon = {
+                                Icon(
+                                    imageVector = if (index == selectedItemIndex) item.selectedIcon else item.unselectedIcon,
+                                    contentDescription = item.tittle
+                                )
+                            })
+                    }
                 }
+
+            }else{
+                //reset the  selected index when returning to the login route
+                selectedItemIndex = 0
             }
         }
     ) { padding ->
-        MainAppNavHost(mainAppNavController, padding)
+        NavHost(navController = navController,
+            startDestination = Graph.authentication,
+            modifier = Modifier.padding(padding)
+        ) {
+            authenticationGraph(navController)
+            mainAppGraph(navController,themeViewModel)
+        }
     }
 }
 
-@Composable
-private fun MainAppNavHost(mainAppNavController: NavHostController, padding: PaddingValues) {
-    NavHost(
-        navController = mainAppNavController,
-        startDestination = Graph.mainApp,
-        modifier = Modifier.padding(padding)
-    ) {
-        mainAppGraph(mainAppNavController)
-    }
-}
+
+
+
 
 

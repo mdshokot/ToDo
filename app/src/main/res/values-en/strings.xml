@@ -2,6 +2,8 @@
 <resources>
     <string name="login">Login</string>
     <string name="register">Register</string>
+    <string name="before_logout_text">Logout from this account</string>
+    <string name="before_theme_switch_text">Change theme</string>
     <!-- Select menu option -->
     <string name="select_label">Select filter</string>
     <string name="all">All</string>

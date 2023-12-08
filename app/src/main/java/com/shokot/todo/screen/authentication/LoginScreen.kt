@@ -180,10 +180,10 @@ fun LoginForm(
                 // Login button
                 Button(
                     onClick = {
-                        if ((email.trim() == "yao") && (password == "123456")
+                       if ((email.trim() == "yao") && (password == "23")
                         ) {
                             //do this when successful login
-                            navController.navigate(Graph.mainAppHelper) {
+                            navController.navigate(Graph.mainApp) {
                                 popUpTo(Graph.authentication) {
                                     inclusive = true
                                 }
