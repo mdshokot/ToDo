@@ -10,6 +10,17 @@
     <string name="all">Tutti</string>
     <string name="before_logout_text">Esci da questo account</string>
     <string name="before_theme_switch_text">Cambia tema</string>
+    <string name="invalid_email">Email non corretta</string>
+    <string name="dont_have_account">Non hai un account? </string>
+    <string name="already_have_account">Hai gia un account?</string>
+    <string name="username">Username</string>
+    <string name="confirm_password">Conferma password</string>
+    <string name="nothing"> </string>
+    <string name="password_min_val">La password deve essere minimo 6 caratteri</string>
+    <string name="password_not_equal">Le password non sono uguali</string>
+    <string name="btn_register">Registrati</string>
+    <string name="empty_username">Username non puo essere vuoto</string>
+    <string name="invalid_credentials">Credenziali sbagliate</string>
     <string-array name="task_filter_options">
         <item>Tutti</item>
         <item>Preferiti</item>

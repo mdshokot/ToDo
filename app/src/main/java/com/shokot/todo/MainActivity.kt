@@ -14,6 +14,8 @@ import com.shokot.todo.ui.theme.ToDoTheme
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.lifecycle.ViewModelProvider
+import com.shokot.todo.database.DbGraph
+import com.shokot.todo.navigation.Graph
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,12 +1,12 @@
 package com.shokot.todo.screen.authentication
 
-import androidx.annotation.StringRes
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
@@ -35,25 +34,27 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.shokot.todo.R
+import com.shokot.todo.database.DbGraph
+import com.shokot.todo.navigation.AuthenticationScreen
 import com.shokot.todo.navigation.Graph
 import com.shokot.todo.ui.theme.ToDoTheme
+import com.shokot.todo.utility.Helper
+import com.shokot.todo.utility.Helper.CustomOutlinedTextField
+import com.shokot.todo.utility.Helper.isEmailValid
 
 @Composable
 fun LoginScreen(navController: NavController) {
@@ -69,7 +70,7 @@ fun LoginScreen(navController: NavController) {
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Background()
+        Helper.Background()
         LoginForm(
             navController,
             email = email,
@@ -79,21 +80,6 @@ fun LoginScreen(navController: NavController) {
             logoVisible
         )
     }
-}
-
-@Composable
-fun Background() {
-    Image(
-        painter = painterResource(id = R.drawable.login_bg),
-        contentDescription = "login background",
-        contentScale = ContentScale.FillBounds,
-        modifier = Modifier.fillMaxSize()
-    )
-}
-
-fun isEmailValid(email: String): Boolean {
-    val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
-    return email.matches(emailPattern.toRegex())
 }
 
 @Composable
@@ -113,6 +99,13 @@ fun LoginForm(
         animationSpec = tween(durationMillis = logoScaleAnimationDuration),
         label = "box scale animation"
     )
+    var isCredentialValid by remember { mutableStateOf(true) }
+    var errorMessage by remember { mutableStateOf(R.string.nothing) }
+    val context = LocalContext.current
+
+    LaunchedEffect(email) {
+        isCredentialValid = true
+    }
 
     Box(
         modifier = Modifier
@@ -149,7 +142,6 @@ fun LoginForm(
             )
         }
 
-
         // Form
         Box(
             modifier = Modifier
@@ -161,12 +153,16 @@ fun LoginForm(
                 // Email field
                 CustomOutlinedTextField(
                     value = email,
-                    onValueChange = onEmailChange,
+                    onValueChange = {
+                        onEmailChange(it)
+                        isCredentialValid = true
+                    },
                     label = R.string.email,
                     icon = Icons.Default.Email,
                     keyboardType = KeyboardType.Email,
                     space = 5
                 )
+
                 // Password field
                 CustomOutlinedTextField(
                     value = password,
@@ -176,63 +172,69 @@ fun LoginForm(
                     keyboardType = KeyboardType.Password,
                     space = 15
                 )
-
+                // Show error if email is not valid
+                AnimatedVisibility(visible = !isCredentialValid) {
+                    Text(
+                        text = stringResource(id = errorMessage),
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+                //don't have account section
+                Spacer(modifier = Modifier.height(40.dp))
+                    Text(
+                        text = stringResource(R.string.dont_have_account),
+                        textDecoration = TextDecoration.Underline,
+                        modifier = Modifier
+                            .clickable{
+                            navController.navigate(AuthenticationScreen.Registration.route)
+                    })
+                Spacer(modifier = Modifier.height(10.dp))
                 // Login button
                 Button(
+                    shape = MaterialTheme.shapes.extraSmall,
                     onClick = {
-                       if ((email.trim() == "yao") && (password == "23")
-                        ) {
-                            //do this when successful login
-                            navController.navigate(Graph.mainApp) {
-                                popUpTo(Graph.authentication) {
-                                    inclusive = true
-                                }
-                            }
+
+                        errorMessage = handleOnLoginClick(navController,email,password) {
+                            isCredentialValid = false
                         }
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(text = stringResource(id = R.string.login))
+
                 }
             }
         }
     }
 }
 
+fun handleOnLoginClick(
+    navController: NavController, email: String, password: String, isCredentialValid: () -> Unit
+) : Int {
+    //check email error
+    if (!isEmailValid(email)) {
+        isCredentialValid()
+        return R.string.invalid_email
+    }
+    //check credential error
+    //check if there is such email in the database confront its passwords and return ,and set the error to
 
-@Composable
-fun CustomOutlinedTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    label: Int,
-    icon: ImageVector,
-    keyboardType: KeyboardType,
-    space: Int
-) {
+    if (!((email.trim() == "yao@gmail.com") && (password == "23"))) {
+        //do this when successful login
+        isCredentialValid()
+        return R.string.invalid_credentials
+    }
 
-    val keyboardController = LocalSoftwareKeyboardController.current
-    OutlinedTextField(
-        value = value,
-        onValueChange = { text ->
-            onValueChange(text)
-        },
-        label = { Text(text = stringResource(label)) },
-        leadingIcon = { Icon(icon, contentDescription = null) },
-        visualTransformation = if (label == R.string.password) PasswordVisualTransformation() else VisualTransformation.None,
-        keyboardOptions = KeyboardOptions.Default.copy(
-            keyboardType = keyboardType,
-            imeAction = ImeAction.Done
-        ),
-        keyboardActions = KeyboardActions(
-            onDone = {
-                keyboardController?.hide()
-            }
-        ),
-        modifier = Modifier.fillMaxWidth(),
-    )
+    navController.navigate(Graph.mainApp) {
+        popUpTo(Graph.authentication) {
+            inclusive = true
+        }
+    }
 
-    Spacer(modifier = Modifier.height(space.dp))
+    return R.string.nothing
 }
+
 
 @Preview(showBackground = true)
 @Composable

@@ -51,7 +51,8 @@ android {
 
 dependencies {
     val nav_version = "2.7.5"
-
+    val room_version = "2.6.1"
+    implementation("androidx.room:room-ktx:$room_version")
     implementation ("androidx.datastore:datastore-preferences:1.0.0")
     implementation("androidx.navigation:navigation-compose:$nav_version")
     implementation("androidx.core:core-ktx:1.9.0")
