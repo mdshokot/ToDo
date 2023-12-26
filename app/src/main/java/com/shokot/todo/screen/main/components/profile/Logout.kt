@@ -1,5 +1,6 @@
 package com.shokot.todo.screen.main.components.profile
 
+import android.content.SharedPreferences
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,7 +21,7 @@ import com.shokot.todo.R
 import com.shokot.todo.navigation.Graph
 
 @Composable
-fun Logout(navController: NavController, modifier: Modifier){
+fun Logout(navController: NavController, modifier: Modifier, preferences: SharedPreferences){
     ElevatedCard(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 6.dp
@@ -36,6 +37,7 @@ fun Logout(navController: NavController, modifier: Modifier){
             Text(text = stringResource(id = R.string.before_logout_text))
             ElevatedButton(
                 onClick = {
+                    preferences.edit().remove("userId").apply()
                     //other things like delete the remember saving the password and email
                     navController.navigate(Graph.authentication){
                         popUpTo(Graph.mainApp) {

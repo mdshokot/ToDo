@@ -36,23 +36,25 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.shokot.todo.R
-import com.shokot.todo.database.DbGraph
-import com.shokot.todo.database.entity.User
+import com.shokot.todo.domain.entity.User
 import com.shokot.todo.navigation.AuthenticationScreen
+import com.shokot.todo.presentation.RegistrationViewModel
 import com.shokot.todo.utility.Helper
 import com.shokot.todo.utility.Helper.CustomOutlinedTextField
 
 @Composable
-fun RegistrationScreen(navController: NavController) {
-    Box(modifier = Modifier
-        .fillMaxSize(), contentAlignment = Alignment.Center) {
+fun RegistrationScreen(navController: NavController, registrationViewModel: RegistrationViewModel) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize(), contentAlignment = Alignment.Center
+    ) {
         Helper.Background()
-        RegistrationForm(navController)
+        RegistrationForm(navController,registrationViewModel)
     }
 }
 
 @Composable
-fun RegistrationForm(navController: NavController) {
+fun RegistrationForm(navController: NavController, registrationViewModel: RegistrationViewModel) {
     val backgroundAlpha = 0.6f
     val scrollState = rememberScrollState()
     val context = LocalContext.current
@@ -65,13 +67,19 @@ fun RegistrationForm(navController: NavController) {
     var isCredentialValid by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf(R.string.nothing) }
 
-    LaunchedEffect(email,password,confirmPassword) {
-            isCredentialValid = true
+
+
+
+    LaunchedEffect(email, password, confirmPassword) {
+        isCredentialValid = true
     }
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally,
-        modifier =  Modifier.padding(10.dp)) {
-        Text(text = stringResource(id = R.string.register),
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(10.dp)
+    ) {
+        Text(
+            text = stringResource(id = R.string.register),
             style = MaterialTheme.typography.titleLarge
         )
         Spacer(modifier = Modifier.height(10.dp))
@@ -83,13 +91,13 @@ fun RegistrationForm(navController: NavController) {
                     shape = MaterialTheme.shapes.large
                 )
                 .padding(20.dp)
-        ){
-            Column (
+        ) {
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(300.dp)
                     .verticalScroll(scrollState)
-            ){
+            ) {
                 //username
                 CustomOutlinedTextField(
                     value = username,
@@ -150,7 +158,7 @@ fun RegistrationForm(navController: NavController) {
                 text = stringResource(R.string.already_have_account),
                 textDecoration = TextDecoration.Underline,
                 modifier = Modifier
-                    .clickable{
+                    .clickable {
                         navController.navigate(AuthenticationScreen.Login.route)
                     })
             //button register
@@ -159,7 +167,15 @@ fun RegistrationForm(navController: NavController) {
                 shape = MaterialTheme.shapes.extraSmall,
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    errorMessage =  handleOnSubmit(navController,username,email,password, confirmPassword, context){
+                    errorMessage = handleOnSubmit(
+                        navController,
+                        username,
+                        email,
+                        password,
+                        confirmPassword,
+                        context,
+                        registrationViewModel
+                    ) {
                         isCredentialValid = false
                     }
                 }) {
@@ -169,17 +185,22 @@ fun RegistrationForm(navController: NavController) {
     }
 }
 
-fun handleOnSubmit(
-    navController: NavController,
-    username: String,
-    email: String,
-    password: String,
-    confirmPassword: String,
-    context: Context,
-    isCredentialValid: () -> Unit
-) : Int{
+ fun handleOnSubmit(
+     navController: NavController,
+     username: String,
+     email: String,
+     password: String,
+     confirmPassword: String,
+     context: Context,
+     registrationViewModel: RegistrationViewModel,
+     isCredentialValid: () -> Unit
+ ): Int {
 
-    if(username.isEmpty()){
+
+
+
+
+    if (username.isEmpty()) {
         isCredentialValid()
         return R.string.empty_username
     }
@@ -189,20 +210,22 @@ fun handleOnSubmit(
         return R.string.invalid_email
     }
 
-    if(password.length < 6){
+    if (password.length < 6) {
         isCredentialValid()
         return R.string.password_min_val
     }
 
-    if(!password.contentEquals(confirmPassword)){
+    if (!password.contentEquals(confirmPassword)) {
         isCredentialValid()
         return R.string.password_not_equal
     }
     //check email to database
+     //save to database
+     //val user = User(username = username, email = email, password = password)
+     //userViewModel.addUser(user)
+     val user = User(username=username, email = email, password = password)
+     registrationViewModel.insertUser(user)
 
-    //save to database
-
-    Toast.makeText(context.applicationContext,"Utente salvato con successo" ,Toast.LENGTH_SHORT).show()
     navController.navigate(AuthenticationScreen.Login.route)
     return R.string.nothing
 }

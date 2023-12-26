@@ -18,10 +18,26 @@
     <string name="btn_register">Register</string>
     <string name="empty_username">Username can\'t be blank</string>
     <string name="invalid_credentials">Invalid credentials</string>
+    <string name="title">Title</string>
+    <string name="task_title">Title</string>
+    <string name="task_descrition">Description</string>
+    <string name="task_graph_name">Graph name</string>
+    <string name="task_value">Value</string>
+    <string name="add_task">Add task</string>
+    <string name="select_task_type">Task type</string>
+    <!-- Home task filter dropdown menu options -->
     <string-array name="task_filter_options">
         <item>@string/all</item>
         <item>Favorites</item>
         <item>Normal</item>
+        <item>Value</item>
+    </string-array>
+    <!-- Task add dropdown menu options -->
+    <string name="normal">Normal</string>
+    <string name="cancel">Cancel</string>
+    <string name="add">Add</string>
+    <string-array name="task_select_option">
+        <item>@string/normal</item>
         <item>Value</item>
     </string-array>
 </resources>

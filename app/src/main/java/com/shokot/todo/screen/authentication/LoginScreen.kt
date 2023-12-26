@@ -1,6 +1,7 @@
 package com.shokot.todo.screen.authentication
 
-import android.widget.Toast
+import android.content.Context
+import android.content.SharedPreferences
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -17,14 +18,11 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,30 +32,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.shokot.todo.R
-import com.shokot.todo.database.DbGraph
 import com.shokot.todo.navigation.AuthenticationScreen
 import com.shokot.todo.navigation.Graph
-import com.shokot.todo.ui.theme.ToDoTheme
+import com.shokot.todo.presentation.RegistrationViewModel
 import com.shokot.todo.utility.Helper
 import com.shokot.todo.utility.Helper.CustomOutlinedTextField
 import com.shokot.todo.utility.Helper.isEmailValid
 
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(navController: NavController, registrationViewModel: RegistrationViewModel) {
     var password by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var logoVisible by remember { mutableStateOf(false) }
@@ -77,7 +68,8 @@ fun LoginScreen(navController: NavController) {
             onEmailChange = { email = it },
             password = password,
             onPasswordChange = { password = it },
-            logoVisible
+            logoVisible,
+            registrationViewModel
         )
     }
 }
@@ -89,7 +81,8 @@ fun LoginForm(
     onEmailChange: (String) -> Unit,
     password: String,
     onPasswordChange: (String) -> Unit,
-    logoVisible: Boolean
+    logoVisible: Boolean,
+    registrationViewModel: RegistrationViewModel
 ) {
     val logoSize = 150
     val backgroundAlpha = 0.6f
@@ -195,7 +188,8 @@ fun LoginForm(
                     shape = MaterialTheme.shapes.extraSmall,
                     onClick = {
 
-                        errorMessage = handleOnLoginClick(navController,email,password) {
+                        //Toast.makeText(context, user.email, Toast.LENGTH_LONG).show()
+                        errorMessage = handleOnLoginClick(navController,email,password,registrationViewModel,context) {
                             isCredentialValid = false
                         }
                     },
@@ -210,21 +204,36 @@ fun LoginForm(
 }
 
 fun handleOnLoginClick(
-    navController: NavController, email: String, password: String, isCredentialValid: () -> Unit
+    navController: NavController,
+    email: String,
+    password: String,
+    registrationViewModel: RegistrationViewModel,
+    context: Context,
+    isCredentialValid: () -> Unit
 ) : Int {
     //check email error
     if (!isEmailValid(email)) {
         isCredentialValid()
         return R.string.invalid_email
     }
+
+    val user = registrationViewModel.getUserByEmail(email)
+
     //check credential error
     //check if there is such email in the database confront its passwords and return ,and set the error to
-
-    if (!((email.trim() == "yao@gmail.com") && (password == "23"))) {
+    if (user == null) {
         //do this when successful login
         isCredentialValid()
         return R.string.invalid_credentials
     }
+
+    if (password != user.password) {
+        //do this when successful login
+        isCredentialValid()
+        return R.string.invalid_credentials
+    }
+    val preferences: SharedPreferences = context.applicationContext.getSharedPreferences("ToDoPrefs", Context.MODE_PRIVATE)
+    preferences.edit().putInt("userId",user.id).apply()
 
     navController.navigate(Graph.mainApp) {
         popUpTo(Graph.authentication) {
@@ -233,14 +242,4 @@ fun handleOnLoginClick(
     }
 
     return R.string.nothing
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-    ToDoTheme {
-        val navController = rememberNavController();
-        LoginScreen(navController = navController);
-    }
 }

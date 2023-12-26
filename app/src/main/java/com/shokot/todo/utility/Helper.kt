@@ -76,7 +76,7 @@ object Helper {
         value: String,
         onValueChange: (String) -> Unit,
         label: Int,
-        icon: ImageVector,
+        icon: ImageVector? = null,
         keyboardType: KeyboardType,
         space: Int
     ) {
@@ -87,8 +87,12 @@ object Helper {
                 onValueChange(text)
             },
             label = { Text(text = stringResource(label)) },
-            leadingIcon = { Icon(icon, contentDescription = null) },
-            visualTransformation = if (label == R.string.password || label == R.string.confirm_password ) PasswordVisualTransformation() else VisualTransformation.None,
+            leadingIcon = {
+                if (icon != null) {
+                    Icon(icon, contentDescription = null)
+                }
+            },
+            visualTransformation = if (label == R.string.password || label == R.string.confirm_password) PasswordVisualTransformation() else VisualTransformation.None,
             keyboardOptions = KeyboardOptions(
                 keyboardType = keyboardType,
                 imeAction = ImeAction.Done

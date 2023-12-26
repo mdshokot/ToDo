@@ -15,9 +15,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.shokot.todo.R
 import com.shokot.todo.ThemeViewModel
+import com.shokot.todo.domain.entity.User
+import com.shokot.todo.presentation.RegistrationViewModel
 
 @Composable
-fun ChangeTheme(themeViewModel: ThemeViewModel, modifier: Modifier){
+fun ChangeTheme(
+    modifier: Modifier,
+    registrationViewModel: RegistrationViewModel,
+    user: User,
+    themeViewModel: ThemeViewModel
+){
     ElevatedCard(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 6.dp
@@ -34,7 +41,7 @@ fun ChangeTheme(themeViewModel: ThemeViewModel, modifier: Modifier){
             Switch(
                 checked = themeViewModel.isDarkTheme,
                 onCheckedChange = {
-                    themeViewModel.toggleTheme()
+                    themeViewModel.isDarkTheme
                 })
         }
     }

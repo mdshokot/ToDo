@@ -21,11 +21,28 @@
     <string name="btn_register">Registrati</string>
     <string name="empty_username">Username non puo essere vuoto</string>
     <string name="invalid_credentials">Credenziali sbagliate</string>
+    <string name="title">Titolo</string>
+    <string name="task_title">Titolo</string>
+    <string name="task_descrition">Descrizione</string>
+    <string name="task_graph_name">Nome Grafico</string>
+    <string name="task_value">Valore</string>
+    <string name="add_task">Aggiungi task</string>
+    <string name="select_task_type">Tipo task</string>
+    <!-- Home task filter dropdown menu options -->
     <string-array name="task_filter_options">
-        <item>Tutti</item>
+        <item>@string/all</item>
         <item>Preferiti</item>
         <item>Normali</item>
         <item>Valore</item>
     </string-array>
+    <string name="normal">Normale</string>
+    <string name="cancel">Annulla</string>
+    <string name="add">Aggiungi</string>
+    <!-- Task add dropdown menu options -->
+    <string-array name="task_select_option">
+        <item>@string/normal</item>
+        <item>Valore</item>
+    </string-array>
+
 
 </resources>
