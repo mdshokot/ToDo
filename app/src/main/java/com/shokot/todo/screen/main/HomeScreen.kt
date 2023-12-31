@@ -5,6 +5,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringArrayResource
@@ -24,6 +27,7 @@ fun HomeScreen(
 ) {
     val items = stringArrayResource(R.array.task_filter_options)
 
+    val fruitName = listOf("Mango", "Apple", "Banana", "Pineapple", "Peach")
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -37,11 +41,25 @@ fun HomeScreen(
             defaultOption = R.string.all
         )
         Spacer(modifier = Modifier.height(5.dp))
+        ToDoList(fruitName)
+        //lazy column
         if (taskViewModal.showModal) {
             TaskDialog(taskViewModal)
         }
     }
 }
+
+@Composable
+fun ToDoList(fruitName: List<String>) {
+    LazyColumn {
+        items(fruitName) { fruit ->
+            Text(text = fruit)
+        }
+    }
+}
+
+
+
 
 
 

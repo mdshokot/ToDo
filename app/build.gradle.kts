@@ -86,6 +86,9 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3:1.2.0-alpha12")
     implementation("io.coil-kt:coil-compose:2.1.0")
+
+    //for permissions
+    implementation("com.google.accompanist:accompanist-permissions:0.33.2-alpha")
     //camera
     implementation("androidx.camera:camera-camera2:1.3.1")
     implementation("androidx.camera:camera-lifecycle:1.3.1")

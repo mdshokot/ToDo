@@ -26,6 +26,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,23 +39,25 @@ import androidx.navigation.NavController
 import com.shokot.todo.R
 import com.shokot.todo.domain.entity.User
 import com.shokot.todo.navigation.AuthenticationScreen
-import com.shokot.todo.presentation.RegistrationViewModel
+import com.shokot.todo.presentation.UserViewModel
 import com.shokot.todo.utility.Helper
 import com.shokot.todo.utility.Helper.CustomOutlinedTextField
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
 
 @Composable
-fun RegistrationScreen(navController: NavController, registrationViewModel: RegistrationViewModel) {
+fun RegistrationScreen(navController: NavController, userViewModel: UserViewModel) {
     Box(
         modifier = Modifier
             .fillMaxSize(), contentAlignment = Alignment.Center
     ) {
         Helper.Background()
-        RegistrationForm(navController,registrationViewModel)
+        RegistrationForm(navController, userViewModel)
     }
 }
 
 @Composable
-fun RegistrationForm(navController: NavController, registrationViewModel: RegistrationViewModel) {
+fun RegistrationForm(navController: NavController, userViewModel: UserViewModel) {
     val backgroundAlpha = 0.6f
     val scrollState = rememberScrollState()
     val context = LocalContext.current
@@ -67,8 +70,8 @@ fun RegistrationForm(navController: NavController, registrationViewModel: Regist
     var isCredentialValid by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf(R.string.nothing) }
 
-
-
+    val msg = stringResource(id = R.string.user_successfully_created)
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(email, password, confirmPassword) {
         isCredentialValid = true
@@ -161,22 +164,44 @@ fun RegistrationForm(navController: NavController, registrationViewModel: Regist
                     .clickable {
                         navController.navigate(AuthenticationScreen.Login.route)
                     })
-            //button register
             Spacer(modifier = Modifier.height(15.dp))
+            //button register
             Button(
                 shape = MaterialTheme.shapes.extraSmall,
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    errorMessage = handleOnSubmit(
-                        navController,
+                    val response = handleOnSubmit(
                         username,
                         email,
                         password,
                         confirmPassword,
-                        context,
-                        registrationViewModel
                     ) {
                         isCredentialValid = false
+                    }
+                    if (response == R.string.nothing) {
+                        coroutineScope.launch {
+                            val doesEmailExists = userViewModel.doesEmailExists(email)
+                            doesEmailExists.firstOrNull()?.let {
+                                if (it) {
+                                    isCredentialValid = false
+                                    errorMessage = R.string.email_already_exists
+                                } else {
+                                    val user = User(
+                                        username = username,
+                                        email = email,
+                                        password = password
+                                    )
+                                    userViewModel.insertUser(user)
+                                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                                    navController.navigate(AuthenticationScreen.Login.route)
+                                }
+                            } ?: run {
+                                isCredentialValid = false
+                                errorMessage = R.string.email_already_exists
+                            }
+                        }
+                    } else {
+                        errorMessage = response
                     }
                 }) {
                 Text(text = stringResource(id = R.string.btn_register))
@@ -185,20 +210,13 @@ fun RegistrationForm(navController: NavController, registrationViewModel: Regist
     }
 }
 
- fun handleOnSubmit(
-     navController: NavController,
-     username: String,
-     email: String,
-     password: String,
-     confirmPassword: String,
-     context: Context,
-     registrationViewModel: RegistrationViewModel,
-     isCredentialValid: () -> Unit
- ): Int {
-
-
-
-
+fun handleOnSubmit(
+    username: String,
+    email: String,
+    password: String,
+    confirmPassword: String,
+    isCredentialValid: () -> Unit
+): Int {
 
     if (username.isEmpty()) {
         isCredentialValid()
@@ -219,14 +237,7 @@ fun RegistrationForm(navController: NavController, registrationViewModel: Regist
         isCredentialValid()
         return R.string.password_not_equal
     }
-    //check email to database
-     //save to database
-     //val user = User(username = username, email = email, password = password)
-     //userViewModel.addUser(user)
-     val user = User(username=username, email = email, password = password)
-     registrationViewModel.insertUser(user)
 
-    navController.navigate(AuthenticationScreen.Login.route)
     return R.string.nothing
 }
 

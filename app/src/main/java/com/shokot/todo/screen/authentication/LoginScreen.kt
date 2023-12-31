@@ -2,6 +2,7 @@ package com.shokot.todo.screen.authentication
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -23,12 +24,15 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,13 +46,19 @@ import androidx.navigation.NavController
 import com.shokot.todo.R
 import com.shokot.todo.navigation.AuthenticationScreen
 import com.shokot.todo.navigation.Graph
-import com.shokot.todo.presentation.RegistrationViewModel
+import com.shokot.todo.presentation.UserViewModel
 import com.shokot.todo.utility.Helper
 import com.shokot.todo.utility.Helper.CustomOutlinedTextField
 import com.shokot.todo.utility.Helper.isEmailValid
+import com.shokot.todo.utility.PreferencesKeys
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
 
 @Composable
-fun LoginScreen(navController: NavController, registrationViewModel: RegistrationViewModel) {
+fun LoginScreen(
+    navController: NavController,
+    userViewModel: UserViewModel,
+) {
     var password by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var logoVisible by remember { mutableStateOf(false) }
@@ -69,7 +79,7 @@ fun LoginScreen(navController: NavController, registrationViewModel: Registratio
             password = password,
             onPasswordChange = { password = it },
             logoVisible,
-            registrationViewModel
+            userViewModel,
         )
     }
 }
@@ -82,7 +92,7 @@ fun LoginForm(
     password: String,
     onPasswordChange: (String) -> Unit,
     logoVisible: Boolean,
-    registrationViewModel: RegistrationViewModel
+    userViewModel: UserViewModel,
 ) {
     val logoSize = 150
     val backgroundAlpha = 0.6f
@@ -95,6 +105,7 @@ fun LoginForm(
     var isCredentialValid by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf(R.string.nothing) }
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(email) {
         isCredentialValid = true
@@ -188,9 +199,11 @@ fun LoginForm(
                     shape = MaterialTheme.shapes.extraSmall,
                     onClick = {
 
-                        //Toast.makeText(context, user.email, Toast.LENGTH_LONG).show()
-                        errorMessage = handleOnLoginClick(navController,email,password,registrationViewModel,context) {
-                            isCredentialValid = false
+                        coroutineScope.launch {
+                            //Toast.makeText(context, user.email, Toast.LENGTH_LONG).show()
+                            errorMessage = handleOnLoginClick(navController,email,password,userViewModel,context) {
+                                isCredentialValid = false
+                            }
                         }
                     },
                     modifier = Modifier.fillMaxWidth()
@@ -203,11 +216,11 @@ fun LoginForm(
     }
 }
 
-fun handleOnLoginClick(
+suspend fun handleOnLoginClick(
     navController: NavController,
     email: String,
     password: String,
-    registrationViewModel: RegistrationViewModel,
+    userViewModel: UserViewModel,
     context: Context,
     isCredentialValid: () -> Unit
 ) : Int {
@@ -217,29 +230,31 @@ fun handleOnLoginClick(
         return R.string.invalid_email
     }
 
-    val user = registrationViewModel.getUserByEmail(email)
+    var errorMessage = R.string.nothing
+    val user  =  userViewModel.getUserByEmail(email)
 
-    //check credential error
-    //check if there is such email in the database confront its passwords and return ,and set the error to
-    if (user == null) {
-        //do this when successful login
-        isCredentialValid()
-        return R.string.invalid_credentials
-    }
+    user.firstOrNull()?.let {fetchedUser ->
 
-    if (password != user.password) {
-        //do this when successful login
-        isCredentialValid()
-        return R.string.invalid_credentials
-    }
-    val preferences: SharedPreferences = context.applicationContext.getSharedPreferences("ToDoPrefs", Context.MODE_PRIVATE)
-    preferences.edit().putInt("userId",user.id).apply()
+        if (password != fetchedUser.password) {
+            isCredentialValid()
+            errorMessage = R.string.invalid_credentials
+        }else{
+            val preferences: SharedPreferences =
+                context.applicationContext.getSharedPreferences("ToDoPrefs", Context.MODE_PRIVATE)
+            preferences.edit().putInt(PreferencesKeys.USER_ID, fetchedUser.id).apply()
+            userViewModel.setMyUser(fetchedUser)
 
-    navController.navigate(Graph.mainApp) {
-        popUpTo(Graph.authentication) {
-            inclusive = true
+            navController.navigate(Graph.mainApp) {
+                popUpTo(Graph.authentication) {
+                    inclusive = true
+                }
+            }
+            Toast.makeText(context, "Login with success", Toast.LENGTH_SHORT).show()
         }
+    }?:run{
+        isCredentialValid()
+        errorMessage = R.string.invalid_credentials
     }
 
-    return R.string.nothing
+    return errorMessage
 }

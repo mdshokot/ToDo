@@ -16,12 +16,12 @@ import androidx.compose.ui.unit.dp
 import com.shokot.todo.R
 import com.shokot.todo.ThemeViewModel
 import com.shokot.todo.domain.entity.User
-import com.shokot.todo.presentation.RegistrationViewModel
+import com.shokot.todo.presentation.UserViewModel
 
 @Composable
 fun ChangeTheme(
     modifier: Modifier,
-    registrationViewModel: RegistrationViewModel,
+    userViewModel: UserViewModel,
     user: User,
     themeViewModel: ThemeViewModel
 ){

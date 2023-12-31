@@ -38,6 +38,8 @@
     <string name="normal">Normale</string>
     <string name="cancel">Annulla</string>
     <string name="add">Aggiungi</string>
+    <string name="email_already_exists">Email esiste già</string>
+    <string name="user_successfully_created">Utente registrato con successo</string>
     <!-- Task add dropdown menu options -->
     <string-array name="task_select_option">
         <item>@string/normal</item>

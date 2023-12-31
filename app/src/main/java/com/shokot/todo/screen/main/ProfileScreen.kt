@@ -26,6 +26,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -43,7 +44,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.shokot.todo.R
 import com.shokot.todo.ThemeViewModel
 import com.shokot.todo.domain.entity.User
-import com.shokot.todo.presentation.RegistrationViewModel
+import com.shokot.todo.presentation.UserViewModel
 import com.shokot.todo.screen.main.components.profile.ChangeTheme
 import com.shokot.todo.screen.main.components.profile.Logout
 import com.shokot.todo.screen.main.components.profile.UserInformation
@@ -55,21 +56,24 @@ import kotlinx.coroutines.launch
 fun ProfileScreen(
     navController: NavController,
     themeViewModel: ThemeViewModel,
-    registrationViewModel: RegistrationViewModel,
-    user: User
+    userViewModel: UserViewModel
 ) {
-
     val profileViewModel: ProfileViewModel = viewModel()
     val userImage by profileViewModel.userImageBitmap.collectAsState()
-    if(user.image !== null){
-        profileViewModel.updateUserImageBitmap(user.image)
+    val user by userViewModel.user.collectAsState()
+
+    LaunchedEffect(Unit){
+        if (user.image !== null && user.image != userImage) {
+            profileViewModel.updateUserImageBitmap(user.image)
+        }
     }
 
-    val takePicture = rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
-        //Log here
-        profileViewModel.updateUserImageBitmap(bitmap)
-        registrationViewModel.updateUser(user.copy(image = bitmap))
-    }
+    val takePicture =
+        rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
+            //Log here
+            profileViewModel.updateUserImageBitmap(bitmap)
+            userViewModel.updateUser(user.copy(image = bitmap))
+        }
 
     val preferences = LocalContext.current.getSharedPreferences("ToDoPrefs", Context.MODE_PRIVATE)
 
@@ -81,28 +85,29 @@ fun ProfileScreen(
             .fillMaxSize()
             .padding(20.dp)
     ) {
+
         val modifier = Modifier.fillMaxWidth()
-        userAvatar(takePicture, userImage,user)
+        userAvatar(takePicture, user,userImage)
         Spacer(modifier = Modifier.height(20.dp))
-        UserInformation(modifier,user)
+        UserInformation(modifier, user)
         Spacer(modifier = Modifier.height(20.dp))
-        ChangeTheme(modifier,registrationViewModel,user,themeViewModel)
+        ChangeTheme(modifier, userViewModel, user, themeViewModel)
         Spacer(modifier = Modifier.height(20.dp))
-        Logout(navController,modifier,preferences)
+        Logout(navController, modifier, preferences)
     }
 }
 
 @Composable
 fun userAvatar(
     takePicture: ManagedActivityResultLauncher<Void?, Bitmap?>,
-    userImage: Bitmap?,
-    user: User
-){
+    user: User,
+    userImage: Bitmap?
+) {
     val painter = if (userImage != null) {
-        rememberAsyncImagePainter(model = userImage)
+        rememberAsyncImagePainter(model = userImage )
     } else {
         // Provide a placeholder image or default image if userImage is null
-        rememberAsyncImagePainter(model = R.drawable.yao)
+        rememberAsyncImagePainter(model = R.drawable.todo_logo)
     }
 
     ElevatedCard(
@@ -118,8 +123,9 @@ fun userAvatar(
                 .padding(10.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Box{
-                Image(painter = painter, contentDescription = "",
+            Box {
+                Image(
+                    painter = painter, contentDescription = "",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .size(200.dp)
@@ -151,7 +157,6 @@ fun userAvatar(
 // ProfileViewModel
 
 class ProfileViewModel : ViewModel() {
-
     private val _userImageBitmap = MutableStateFlow<Bitmap?>(null)
     val userImageBitmap = _userImageBitmap.asStateFlow()
 

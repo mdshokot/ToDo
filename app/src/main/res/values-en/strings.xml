@@ -36,6 +36,8 @@
     <string name="normal">Normal</string>
     <string name="cancel">Cancel</string>
     <string name="add">Add</string>
+    <string name="email_already_exists">Email already exists</string>
+    <string name="user_successfully_created">User created with success</string>
     <string-array name="task_select_option">
         <item>@string/normal</item>
         <item>Value</item>

@@ -13,8 +13,13 @@ import com.shokot.todo.navigation.AppNavigation
 import com.shokot.todo.ui.theme.ToDoTheme
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModelProvider
-import com.shokot.todo.presentation.RegistrationViewModel
+import com.shokot.todo.presentation.HomeScreenViewModel
+import com.shokot.todo.presentation.UserViewModel
+import com.shokot.todo.utility.PreferencesKeys
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -36,10 +41,16 @@ class MainActivity : ComponentActivity() {
                 }
             )
 
-            val registrationViewModel by viewModels<RegistrationViewModel>()
+            val userViewModel by viewModels<UserViewModel>()
+            val userFlow = userViewModel.getUserById(preferences.getInt(PreferencesKeys.USER_ID, 0))
+            val user = userFlow.collectAsState(initial = null).value
+            if(user !== null){
+                userViewModel.setMyUser(user)
+            }
+            val homeScreenViewModel by viewModels<HomeScreenViewModel>()
 
             ToDoTheme(darkTheme = themeViewModel.isDarkTheme) {
-                AppNavigation(themeViewModel,registrationViewModel)
+                AppNavigation(themeViewModel,userViewModel,homeScreenViewModel)
             }
         }
     }

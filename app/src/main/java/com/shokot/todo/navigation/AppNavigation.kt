@@ -11,10 +11,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -27,12 +30,17 @@ import com.shokot.todo.ThemeViewModel
 import com.shokot.todo.navigation.graph.authenticationGraph
 import com.shokot.todo.navigation.graph.mainAppGraph
 import com.shokot.todo.presentation.HomeScreenViewModel
-import com.shokot.todo.presentation.RegistrationViewModel
+import com.shokot.todo.presentation.UserViewModel
 import com.shokot.todo.screen.main.components.home.TaskDialogViewModel
 import com.shokot.todo.utility.Helper
+import com.shokot.todo.utility.PreferencesKeys
 
 @Composable
-fun AppNavigation(themeViewModel: ThemeViewModel, registrationViewModel: RegistrationViewModel) {
+fun AppNavigation(
+    themeViewModel: ThemeViewModel,
+    userViewModel: UserViewModel,
+    homeScreenViewModel: HomeScreenViewModel
+) {
 
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -42,7 +50,7 @@ fun AppNavigation(themeViewModel: ThemeViewModel, registrationViewModel: Registr
         LocalContext.current.getSharedPreferences("ToDoPrefs", Context.MODE_PRIVATE)
 
     val taskViewModal = viewModel<TaskDialogViewModel>()
-    val homeScreenViewModel = viewModel<HomeScreenViewModel>()
+    val hasUser = preferences.contains(PreferencesKeys.USER_ID)
     Scaffold(
         bottomBar = {
             if (Helper.isMainApp(currentRoute)) {
@@ -62,7 +70,6 @@ fun AppNavigation(themeViewModel: ThemeViewModel, registrationViewModel: Registr
                             })
                     }
                 }
-
             } else {
                 //reset the  selected index when returning to the login route
                 selectedItemIndex = 0
@@ -79,15 +86,19 @@ fun AppNavigation(themeViewModel: ThemeViewModel, registrationViewModel: Registr
             }
         }
     ) { padding ->
-        val hasUser = preferences.contains("userId")
-
         NavHost(
             navController = navController,
             startDestination = if (hasUser) Graph.mainApp else Graph.authentication,
             modifier = Modifier.padding(padding)
         ) {
-            authenticationGraph(navController, registrationViewModel)
-            mainAppGraph(navController, themeViewModel, registrationViewModel, preferences,taskViewModal,homeScreenViewModel)
+            authenticationGraph(navController, userViewModel)
+            mainAppGraph(
+                navController,
+                themeViewModel,
+                userViewModel,
+                taskViewModal,
+                homeScreenViewModel
+            )
         }
     }
 }
