@@ -52,4 +52,7 @@ class TaskDialogViewModel : ViewModel() {
     fun setMySelectedItem(selectedItem: String) {
         this.selectedItem = selectedItem
     }
+    fun isNormal(type : String):Boolean{
+        return this.selectedItem == type
+    }
 }

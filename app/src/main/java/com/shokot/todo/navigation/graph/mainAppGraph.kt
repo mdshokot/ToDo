@@ -1,11 +1,5 @@
 package com.shokot.todo.navigation.graph
 
-import android.content.Context
-import android.content.SharedPreferences
-import android.util.Log
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -18,8 +12,8 @@ import com.shokot.todo.presentation.UserViewModel
 import com.shokot.todo.screen.main.GraphScreen
 import com.shokot.todo.screen.main.HomeScreen
 import com.shokot.todo.screen.main.ProfileScreen
+import com.shokot.todo.screen.main.TaskScreen
 import com.shokot.todo.screen.main.components.home.TaskDialogViewModel
-import com.shokot.todo.utility.PreferencesKeys
 
 fun NavGraphBuilder.mainAppGraph(
     navController: NavController,
@@ -42,5 +36,9 @@ fun NavGraphBuilder.mainAppGraph(
                 userViewModel = userViewModel
             )
         }
+        composable(route = MainAppScreen.Task.route+"/{taskId}"){
+            TaskScreen(navController = navController)
+        }
+
     }
 }

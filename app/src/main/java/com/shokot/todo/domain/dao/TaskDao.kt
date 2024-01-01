@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.shokot.todo.domain.entity.Task
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TaskDao {
@@ -20,14 +21,40 @@ interface TaskDao {
     suspend fun deleteTask(task: Task)
 
     @Query("SELECT * from task where task.id = :id")
-    suspend fun getTaskById(id : Int): Task?
+    fun getTaskById(id : Int): Flow<Task>
 
     @Query("SELECT EXISTS(SELECT * FROM task WHERE graph_name = :graphName)")
-    fun doesGraphNameExist(graphName: String): Boolean
+    fun doesGraphNameExist(graphName: String): Flow<Boolean>
 
     @Query("SELECT value FROM task WHERE id = :taskId")
-    suspend fun getTaskValueById(taskId: Int): Int?
+    fun getTaskValueById(taskId: Int): Flow<Int>
 
     @Query("SELECT * from task WHERE task.user_id = :userId")
-    suspend fun getAllTaskByUserId(userId: Int): List<Task>
+    fun getAllTaskByUserId(userId: Int): List<Task>
+
+    @Query("""
+         SELECT
+t.title AS title,
+t.description AS description,
+t.graph_name AS graphName,
+t.type AS type,
+t.value AS value,
+t.favorite AS favorite,
+ut.completed AS completed,
+ut.task_id AS taskId
+         FROM user_task ut
+INNER JOIN task t ON t.id = ut.task_id and ut.date = :currDate and ut.user_id = :userId
+     """)
+    fun getAllTaskOfUser(userId:Int,currDate:String): Flow<List<MyTask>>
 }
+
+data class MyTask(
+    val title: String,
+    val description: String,
+    val graphName: String,
+    val type: String,
+    val value: Int?,
+    val favorite: Boolean,
+    val completed: Boolean,
+    val taskId: Int
+)

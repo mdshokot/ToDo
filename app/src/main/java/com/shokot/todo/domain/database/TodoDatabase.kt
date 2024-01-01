@@ -14,7 +14,7 @@ import com.shokot.todo.domain.entity.Task
 import com.shokot.todo.domain.entity.User
 import com.shokot.todo.domain.entity.UserTask
 
-@Database(entities = [User::class,Task::class,UserTask::class,Graph::class],version = 3, exportSchema = true)
+@Database(entities = [User::class,Task::class,UserTask::class,Graph::class],version = 4, exportSchema = true)
 @TypeConverters(ImageConvertor::class,DateConvertor::class)
 abstract class TodoDatabase : RoomDatabase() {
     abstract fun userDao() : UserDao

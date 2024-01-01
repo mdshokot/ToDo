@@ -41,7 +41,7 @@ fun ChangeTheme(
             Switch(
                 checked = themeViewModel.isDarkTheme,
                 onCheckedChange = {
-                    themeViewModel.isDarkTheme
+                    themeViewModel.toggleTheme()
                 })
         }
     }

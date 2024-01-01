@@ -15,7 +15,7 @@ data class UserTask(
     val userId: Int,
 
     @ColumnInfo(name = "task_id")
-    val taskId: Long,
+    val taskId: Int,
 
     val date: LocalDate = LocalDate.now(),
 

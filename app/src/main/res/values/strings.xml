@@ -40,6 +40,7 @@
     <string name="add">Aggiungi</string>
     <string name="email_already_exists">Email esiste già</string>
     <string name="user_successfully_created">Utente registrato con successo</string>
+    <string name="add_task_succes">Task aggiunto con success</string>
     <!-- Task add dropdown menu options -->
     <string-array name="task_select_option">
         <item>@string/normal</item>

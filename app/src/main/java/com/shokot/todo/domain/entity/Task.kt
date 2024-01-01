@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "task", indices = [Index(value = ["graph_name"], unique = true)])
+@Entity(tableName = "task", indices = [Index(value = ["user_id", "graph_name"], unique = true)])
 data class Task(
     @PrimaryKey(autoGenerate = true)
     val id: Int  = 0,
