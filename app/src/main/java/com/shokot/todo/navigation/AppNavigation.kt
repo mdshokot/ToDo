@@ -11,13 +11,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -30,6 +27,7 @@ import com.shokot.todo.ThemeViewModel
 import com.shokot.todo.navigation.graph.authenticationGraph
 import com.shokot.todo.navigation.graph.mainAppGraph
 import com.shokot.todo.presentation.HomeScreenViewModel
+import com.shokot.todo.presentation.TaskViewModel
 import com.shokot.todo.presentation.UserViewModel
 import com.shokot.todo.screen.main.components.home.TaskDialogViewModel
 import com.shokot.todo.utility.Helper
@@ -39,7 +37,8 @@ import com.shokot.todo.utility.PreferencesKeys
 fun AppNavigation(
     themeViewModel: ThemeViewModel,
     userViewModel: UserViewModel,
-    homeScreenViewModel: HomeScreenViewModel
+    homeScreenViewModel: HomeScreenViewModel,
+    taskViewModel: TaskViewModel
 ) {
 
     val navController = rememberNavController()
@@ -97,7 +96,8 @@ fun AppNavigation(
                 themeViewModel,
                 userViewModel,
                 taskViewModal,
-                homeScreenViewModel
+                homeScreenViewModel,
+                taskViewModel
             )
         }
     }

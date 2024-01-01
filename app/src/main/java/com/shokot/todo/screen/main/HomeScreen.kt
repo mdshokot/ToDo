@@ -42,6 +42,8 @@ fun HomeScreen(
     val userId = preferences.getInt(PreferencesKeys.USER_ID, 0)
     val myTasks  = homeScreenViewModel.getAllTaskOfUser(userId,currentDate).collectAsState(initial = emptyList()).value
 
+    //val myTasksFiltered  = homeScreenViewModel.getAllTaskByFilter(userId,currentDate,type="normal",favorite = null).collectAsState(initial = emptyList()).value
+
     Column(
         modifier = Modifier
             .fillMaxSize()

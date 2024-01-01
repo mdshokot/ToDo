@@ -31,6 +31,13 @@ class HomeScreenViewModel @Inject constructor(
         return taskRepository.getAllTaskOfUser(userId,currDate)
     }
 
+    fun getAllTaskByFilter(userId:Int,currDate:String,type: String,favorite:Boolean?):Flow<List<MyTask>>{
+
+        return taskRepository.getAllTaskByFilter(userId,currDate,type,favorite)
+    }
+
+
+
     //modo per inserire una task
     var task by mutableStateOf(Task(graphName = "prova", type = "prova", userId = 0))
         private set
@@ -52,19 +59,6 @@ class HomeScreenViewModel @Inject constructor(
     fun doesGraphNameExists(graphName: String): Flow<Boolean> {
         return taskRepository.doesGraphNameExist(graphName)
     }
-
-    fun updateTitle(title: String) {
-        this.task = task.copy(title = title)
-    }
-
-    fun updateDescription(description: String) {
-        this.task = task.copy(description = description)
-    }
-
-    fun updateValue(value: Int?) {
-        this.task = task.copy(value = value)
-    }
-
 
     // select section
     fun setMySelectedItem(selectedItem: String) {

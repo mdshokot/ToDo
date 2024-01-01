@@ -58,8 +58,7 @@ fun MyTaskCard(
                 .background(backgroundColor)
                 .padding(10.dp, 0.dp)
                 .clickable {
-                    backgroundColor = Color.Green
-                    navController.navigate(MainAppScreen.Task.route+"/${myTask.taskId}")
+                    navController.navigate(MainAppScreen.Task.route + "/${myTask.taskId}")
                 },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -95,5 +94,5 @@ fun MyTaskCard(
             }
         }
     }
-
 }
+

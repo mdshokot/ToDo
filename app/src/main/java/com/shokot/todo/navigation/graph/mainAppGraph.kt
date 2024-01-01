@@ -8,6 +8,7 @@ import com.shokot.todo.ThemeViewModel
 import com.shokot.todo.navigation.Graph
 import com.shokot.todo.navigation.MainAppScreen
 import com.shokot.todo.presentation.HomeScreenViewModel
+import com.shokot.todo.presentation.TaskViewModel
 import com.shokot.todo.presentation.UserViewModel
 import com.shokot.todo.screen.main.GraphScreen
 import com.shokot.todo.screen.main.HomeScreen
@@ -21,6 +22,7 @@ fun NavGraphBuilder.mainAppGraph(
     userViewModel: UserViewModel,
     taskViewModal: TaskDialogViewModel,
     homeScreenViewModel: HomeScreenViewModel,
+    taskViewModel: TaskViewModel,
 ) {
 
     navigation(startDestination = MainAppScreen.Home.route, route = Graph.mainApp) {
@@ -37,7 +39,7 @@ fun NavGraphBuilder.mainAppGraph(
             )
         }
         composable(route = MainAppScreen.Task.route+"/{taskId}"){
-            TaskScreen(navController = navController)
+            TaskScreen(navController = navController,taskViewModel)
         }
 
     }

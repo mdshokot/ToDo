@@ -41,6 +41,13 @@
     <string name="email_already_exists">Email esiste già</string>
     <string name="user_successfully_created">Utente registrato con successo</string>
     <string name="add_task_succes">Task aggiunto con success</string>
+    <string name="delete_task">Elimina</string>
+    <string name="save">Salva</string>
+    <string name="task_saved_success">Task salvato con successo</string>
+    <string name="task_delete_success">Task eliminato con successo</string>
+    <string name="delete_task_title">Elimina task</string>
+    <string name="delete_task_body">Sei sicuro di eliminare la task?</string>
+    <string name="delete">Elimina</string>
     <!-- Task add dropdown menu options -->
     <string-array name="task_select_option">
         <item>@string/normal</item>

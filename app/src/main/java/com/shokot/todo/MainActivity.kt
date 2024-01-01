@@ -13,11 +13,10 @@ import com.shokot.todo.navigation.AppNavigation
 import com.shokot.todo.ui.theme.ToDoTheme
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModelProvider
 import com.shokot.todo.presentation.HomeScreenViewModel
+import com.shokot.todo.presentation.TaskViewModel
 import com.shokot.todo.presentation.UserViewModel
 import com.shokot.todo.utility.PreferencesKeys
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,13 +27,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         setContent {
-
             val preferences: SharedPreferences = this.getSharedPreferences("ToDoPrefs", Context.MODE_PRIVATE)
             val themeViewModel by viewModels<ThemeViewModel>(
                 factoryProducer = {
                     object : ViewModelProvider.Factory{
+                        @Suppress("UNCHECKED_CAST")
                         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-
                             return ThemeViewModel(preferences) as T
                         }
                     }
@@ -48,9 +46,10 @@ class MainActivity : ComponentActivity() {
                 userViewModel.setMyUser(user)
             }
             val homeScreenViewModel by viewModels<HomeScreenViewModel>()
+            val taskViewModel by viewModels<TaskViewModel>()
 
             ToDoTheme(darkTheme = themeViewModel.isDarkTheme) {
-                AppNavigation(themeViewModel,userViewModel,homeScreenViewModel)
+                AppNavigation(themeViewModel,userViewModel,homeScreenViewModel,taskViewModel)
             }
         }
     }

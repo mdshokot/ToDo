@@ -39,6 +39,13 @@
     <string name="email_already_exists">Email already exists</string>
     <string name="user_successfully_created">User created with success</string>
     <string name="add_task_succes">Task added with success</string>
+    <string name="delete_task">Delete</string>
+    <string name="save">Save</string>
+    <string name="task_saved_success">Task saved with success</string>
+    <string name="task_delete_success">Task deleted with success</string>
+    <string name="delete_task_title">Delete Task</string>
+    <string name="delete_task_body">Are you sure you want to delete the task?</string>
+    <string name="delete">Delete</string>
     <string-array name="task_select_option">
         <item>@string/normal</item>
         <item>Value</item>

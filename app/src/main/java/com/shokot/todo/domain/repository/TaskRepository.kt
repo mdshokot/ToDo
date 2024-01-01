@@ -15,9 +15,21 @@ class TaskRepository(
 
     suspend fun deleteTask(task: Task) = dao.deleteTask(task)
 
-     fun getTaskById(id : Int): Flow<Task> = dao.getTaskById(id)
+    suspend fun deleteTaskFromGraph(taskId: Int) = dao.deleteTaskFromGraph(taskId)
+    suspend fun deleteFromUserTask(userId: Int, taskId: Int) =
+        dao.deleteFromUserTask(userId, taskId)
+
+    fun getTaskById(id: Int): Flow<Task> = dao.getTaskById(id)
 
     fun doesGraphNameExist(graphName: String): Flow<Boolean> = dao.doesGraphNameExist(graphName)
 
-    fun getAllTaskOfUser(userId:Int,currDate:String): Flow<List<MyTask>> = dao.getAllTaskOfUser(userId,currDate)
+    fun getAllTaskOfUser(userId: Int, currDate: String): Flow<List<MyTask>> =
+        dao.getAllTaskOfUser(userId, currDate)
+
+    fun getAllTaskByFilter(
+        userId: Int,
+        currDate: String,
+        type: String,
+        favorite: Boolean?
+    ): Flow<List<MyTask>> = dao.getAllTaskByFilter(userId, currDate, type, favorite)
 }

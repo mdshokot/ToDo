@@ -162,7 +162,9 @@ class ProfileViewModel : ViewModel() {
 
     fun updateUserImageBitmap(bitmap: Bitmap?) {
         viewModelScope.launch {
-            _userImageBitmap.value = bitmap
+            if(bitmap !== null){
+                _userImageBitmap.value = bitmap
+            }
         }
     }
 }
