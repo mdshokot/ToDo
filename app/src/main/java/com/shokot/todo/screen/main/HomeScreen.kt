@@ -21,6 +21,7 @@ import androidx.navigation.NavController
 import com.shokot.todo.R
 import com.shokot.todo.domain.dao.MyTask
 import com.shokot.todo.presentation.HomeScreenViewModel
+import com.shokot.todo.presentation.TaskViewModel
 import com.shokot.todo.screen.main.components.home.CustomDropDown
 import com.shokot.todo.screen.main.components.home.MyTaskCard
 import com.shokot.todo.screen.main.components.home.TaskDialog
@@ -33,7 +34,8 @@ import java.time.format.DateTimeFormatter
 fun HomeScreen(
     navController: NavController,
     taskViewModal: TaskDialogViewModel,
-    homeScreenViewModel: HomeScreenViewModel
+    homeScreenViewModel: HomeScreenViewModel,
+    taskScreenViewModel: TaskViewModel
 ) {
     val items = stringArrayResource(R.array.task_filter_options)
     val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
@@ -58,7 +60,7 @@ fun HomeScreen(
             defaultOption = R.string.all,
         )
         Spacer(modifier = Modifier.height(5.dp))
-        ToDoList(myTasks,navController)
+        ToDoList(myTasks,navController,taskScreenViewModel)
         //lazy column
         if (taskViewModal.showModal) {
             TaskDialog(taskViewModal,homeScreenViewModel)
@@ -67,10 +69,14 @@ fun HomeScreen(
 }
 
 @Composable
-fun ToDoList(myTasks: List<MyTask>, navController: NavController) {
+fun ToDoList(
+    myTasks: List<MyTask>,
+    navController: NavController,
+    taskScreenViewModel: TaskViewModel
+) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(myTasks) { myTask ->
-            MyTaskCard(myTask = myTask, onSwipe = { /*TODO*/ }, onUpdate = {},navController)
+            MyTaskCard(myTask = myTask,navController,taskScreenViewModel)
             Spacer(modifier = Modifier.height(10.dp))
         }
     }

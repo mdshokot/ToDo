@@ -32,4 +32,7 @@ class TaskRepository(
         type: String,
         favorite: Boolean?
     ): Flow<List<MyTask>> = dao.getAllTaskByFilter(userId, currDate, type, favorite)
+
+    suspend fun setTaskCompleted(userId: Int, taskId: Int, currDate: String) =
+        dao.setTaskCompleted(userId, taskId, currDate)
 }

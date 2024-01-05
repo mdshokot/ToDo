@@ -48,7 +48,7 @@ fun AppNavigation(
     val preferences: SharedPreferences =
         LocalContext.current.getSharedPreferences("ToDoPrefs", Context.MODE_PRIVATE)
 
-    val taskViewModal = viewModel<TaskDialogViewModel>()
+    val taskDialogViewModal = viewModel<TaskDialogViewModel>()
     val hasUser = preferences.contains(PreferencesKeys.USER_ID)
     Scaffold(
         bottomBar = {
@@ -77,7 +77,7 @@ fun AppNavigation(
         floatingActionButton = {
             if (currentRoute == MainAppScreen.Home.route) {
                 FloatingActionButton(
-                    onClick = { taskViewModal.showDialog() },
+                    onClick = { taskDialogViewModal.showDialog() },
                     shape = CircleShape
                 ) {
                     Icon(imageVector = Icons.Default.Add, contentDescription = "")
@@ -95,7 +95,7 @@ fun AppNavigation(
                 navController,
                 themeViewModel,
                 userViewModel,
-                taskViewModal,
+                taskDialogViewModal,
                 homeScreenViewModel,
                 taskViewModel
             )

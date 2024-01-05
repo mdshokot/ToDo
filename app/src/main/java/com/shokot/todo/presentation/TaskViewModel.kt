@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -69,8 +71,14 @@ class TaskViewModel @Inject constructor(
         } else {
             value.toIntOrNull()
         }
-
         this._task.value = this._task.value.copy(value = tempValue)
+    }
+
+    fun taskCompleted(userId: Int, taskId: Int) {
+        val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        viewModelScope.launch(Dispatchers.IO) {
+            taskRepository.setTaskCompleted(userId, taskId, currentDate)
+        }
     }
 
 }

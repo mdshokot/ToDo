@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface TaskDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTask(task: Task):Long
+    suspend fun insertTask(task: Task): Long
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateTask(task: Task)
@@ -21,7 +21,7 @@ interface TaskDao {
     suspend fun deleteTask(task: Task)
 
     @Query("SELECT * from task where task.id = :id")
-    fun getTaskById(id : Int): Flow<Task>
+    fun getTaskById(id: Int): Flow<Task>
 
     @Query("SELECT EXISTS(SELECT * FROM task WHERE graph_name = :graphName)")
     fun doesGraphNameExist(graphName: String): Flow<Boolean>
@@ -32,7 +32,8 @@ interface TaskDao {
     @Query("SELECT * from task WHERE task.user_id = :userId")
     fun getAllTaskByUserId(userId: Int): List<Task>
 
-    @Query("""
+    @Query(
+        """
          SELECT
 t.title AS title,
 t.description AS description,
@@ -41,13 +42,16 @@ t.type AS type,
 t.value AS value,
 t.favorite AS favorite,
 ut.completed AS completed,
-ut.task_id AS taskId
+ut.task_id AS taskId,
+ut.user_id AS userId
          FROM user_task ut
 INNER JOIN task t ON t.id = ut.task_id and ut.date = :currDate and ut.user_id = :userId
-     """)
-    fun getAllTaskOfUser(userId:Int,currDate:String): Flow<List<MyTask>>
+     """
+    )
+    fun getAllTaskOfUser(userId: Int, currDate: String): Flow<List<MyTask>>
 
-    @Query("""
+    @Query(
+        """
          SELECT
 t.title AS title,
 t.description AS description,
@@ -56,21 +60,37 @@ t.type AS type,
 t.value AS value,
 t.favorite AS favorite,
 ut.completed AS completed,
-ut.task_id AS taskId
+ut.task_id AS taskId,
+ut.user_id AS userId
 FROM user_task ut
 INNER JOIN task t ON t.id = ut.task_id 
     AND ut.date = :currDate 
     AND ut.user_id = :userId 
 	AND (:type == 'all' OR t.type = :type)
 	AND (:favorite is null or t.favorite = :favorite)
-     """)
-    fun getAllTaskByFilter(userId:Int,currDate:String,type: String,favorite:Boolean?): Flow<List<MyTask>>
+     """
+    )
+    fun getAllTaskByFilter(
+        userId: Int,
+        currDate: String,
+        type: String,
+        favorite: Boolean?
+    ): Flow<List<MyTask>>
 
     @Query("DELETE FROM graph  WHERE graph.task_id = :taskId")
     suspend fun deleteTaskFromGraph(taskId: Int)
 
     @Query("DELETE FROM user_task  WHERE user_id = :userId AND task_id = :taskId ")
-    suspend fun deleteFromUserTask(userId: Int, taskId:Int)
+    suspend fun deleteFromUserTask(userId: Int, taskId: Int)
+
+    @Query(
+        """
+        UPDATE user_task 
+        SET completed = 1
+        WHERE user_id = :userId AND task_id = :taskId and date = :currDate
+    """
+    )
+    suspend fun setTaskCompleted(userId: Int, taskId: Int, currDate: String)
 
 }
 
@@ -82,5 +102,6 @@ data class MyTask(
     val value: Int?,
     val favorite: Boolean,
     val completed: Boolean,
-    val taskId: Int
+    val taskId: Int,
+    val userId: Int,
 )

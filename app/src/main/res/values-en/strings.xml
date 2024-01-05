@@ -46,6 +46,7 @@
     <string name="delete_task_title">Delete Task</string>
     <string name="delete_task_body">Are you sure you want to delete the task?</string>
     <string name="delete">Delete</string>
+    <string name="favorite">Favorite</string>
     <string-array name="task_select_option">
         <item>@string/normal</item>
         <item>Value</item>

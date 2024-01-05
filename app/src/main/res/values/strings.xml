@@ -48,6 +48,7 @@
     <string name="delete_task_title">Elimina task</string>
     <string name="delete_task_body">Sei sicuro di eliminare la task?</string>
     <string name="delete">Elimina</string>
+    <string name="favorite">Preferiti</string>
     <!-- Task add dropdown menu options -->
     <string-array name="task_select_option">
         <item>@string/normal</item>

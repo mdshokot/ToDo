@@ -20,14 +20,14 @@ fun NavGraphBuilder.mainAppGraph(
     navController: NavController,
     themeViewModel: ThemeViewModel,
     userViewModel: UserViewModel,
-    taskViewModal: TaskDialogViewModel,
+    taskDialogViewModel: TaskDialogViewModel,
     homeScreenViewModel: HomeScreenViewModel,
-    taskViewModel: TaskViewModel,
+    taskScreenViewModel: TaskViewModel,
 ) {
 
     navigation(startDestination = MainAppScreen.Home.route, route = Graph.mainApp) {
         composable(route = MainAppScreen.Home.route) {
-            HomeScreen(navController = navController, taskViewModal, homeScreenViewModel)
+            HomeScreen(navController = navController, taskDialogViewModel, homeScreenViewModel,taskScreenViewModel)
         }
         composable(route = MainAppScreen.Graph.route) {
             GraphScreen(navController = navController)
@@ -39,7 +39,7 @@ fun NavGraphBuilder.mainAppGraph(
             )
         }
         composable(route = MainAppScreen.Task.route+"/{taskId}"){
-            TaskScreen(navController = navController,taskViewModel)
+            TaskScreen(navController = navController,taskScreenViewModel)
         }
 
     }
