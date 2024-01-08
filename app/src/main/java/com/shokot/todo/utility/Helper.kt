@@ -1,5 +1,6 @@
 package com.shokot.todo.utility
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -46,13 +47,14 @@ object Helper {
         ),
     )
 
+
+
     fun isMainApp(route: String?): Boolean {
         val showBottomNavBar = listOf(
             MainAppScreen.Home.route,
             MainAppScreen.Profile.route,
             MainAppScreen.Graph.route,
         )
-
         return showBottomNavBar.contains(route)
     }
 

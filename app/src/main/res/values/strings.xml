@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name" translatable="false">ToDo</string>
     <string name="login">Accedi</string>
-    <string name="register">Registrazione</string>
+    <string name="register">REGISTRAZIONE</string>
     <string name="email" translatable="false">Email</string>
     <string name="password" translatable="false">Password</string>
     <string name="logout" translatable="false">logout</string>
@@ -49,6 +49,9 @@
     <string name="delete_task_body">Sei sicuro di eliminare la task?</string>
     <string name="delete">Elimina</string>
     <string name="favorite">Preferiti</string>
+    <string name="go_back">Ritorna indietro</string>
+    <string name="completed">Completato</string>
+    <string name="not_completed">Non completati</string>
     <!-- Task add dropdown menu options -->
     <string-array name="task_select_option">
         <item>@string/normal</item>

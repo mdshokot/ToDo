@@ -5,18 +5,26 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.shokot.todo.R
 import com.shokot.todo.domain.dao.MyTask
 import com.shokot.todo.domain.entity.Task
 import com.shokot.todo.domain.entity.UserTask
 import com.shokot.todo.domain.repository.GraphRepository
 import com.shokot.todo.domain.repository.TaskRepository
 import com.shokot.todo.domain.repository.UserTaskRepository
+import com.shokot.todo.utility.SelectOption
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
-
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
     private val taskRepository: TaskRepository,
@@ -26,16 +34,31 @@ class HomeScreenViewModel @Inject constructor(
     var selectedItem by mutableStateOf("")
         private set
 
-    fun getAllTaskOfUser(userId:Int,currDate:String):Flow<List<MyTask>>{
+    var sortType = MutableStateFlow("all")
+        private set
 
-        return taskRepository.getAllTaskOfUser(userId,currDate)
+    fun setSortType(newSortType: String) {
+        sortType.value = newSortType
     }
 
-    fun getAllTaskByFilter(userId:Int,currDate:String,type: String,favorite:Boolean?):Flow<List<MyTask>>{
+    private val _userId = MutableStateFlow(0)
+    var userId: Int
+        get() = _userId.value
+        set(value) {
+            _userId.value = value
+        }
 
-        return taskRepository.getAllTaskByFilter(userId,currDate,type,favorite)
-    }
-
+     val tasks : Flow<List<MyTask>> = sortType.flatMapLatest { sortType ->
+    // Replace with your actual user ID
+        val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        when (sortType) {
+            "normal" -> taskRepository.getAllTaskNormalOrValue(userId,"normal",currentDate)
+            "value" -> taskRepository.getAllTaskNormalOrValue(userId,"value",currentDate)
+            "all" ->  taskRepository.getAllTaskOfUser(userId,currentDate)
+            "favorite" -> taskRepository.getAllFavoriteTask(userId,currentDate)
+            else ->  taskRepository.getAllTaskOfUser(userId,currentDate)
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
 
     //modo per inserire una task

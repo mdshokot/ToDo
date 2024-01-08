@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -29,12 +30,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -62,12 +67,18 @@ fun ProfileScreen(
     val userImage by profileViewModel.userImageBitmap.collectAsState()
     val user by userViewModel.user.collectAsState()
 
-    LaunchedEffect(Unit){
+    LaunchedEffect(Unit) {
         if (user.image !== null && user.image != userImage) {
             profileViewModel.updateUserImageBitmap(user.image)
         }
     }
-
+    var cameraPermissionGranted by remember { mutableStateOf(false) }
+    val cameraPermissionLauncher: ActivityResultLauncher<String> =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            cameraPermissionGranted = isGranted
+        }
     val takePicture =
         rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
             //Log here
@@ -87,7 +98,7 @@ fun ProfileScreen(
     ) {
 
         val modifier = Modifier.fillMaxWidth()
-        userAvatar(takePicture, user,userImage)
+        userAvatar(takePicture, user, userImage,cameraPermissionLauncher,cameraPermissionGranted)
         Spacer(modifier = Modifier.height(20.dp))
         UserInformation(modifier, user)
         Spacer(modifier = Modifier.height(20.dp))
@@ -101,15 +112,10 @@ fun ProfileScreen(
 fun userAvatar(
     takePicture: ManagedActivityResultLauncher<Void?, Bitmap?>,
     user: User,
-    userImage: Bitmap?
+    userImage: Bitmap?,
+    cameraPermissionLauncher: ActivityResultLauncher<String>,
+    cameraPermissionGranted: Boolean
 ) {
-    val painter = if (userImage != null) {
-        rememberAsyncImagePainter(model = userImage )
-    } else {
-        // Provide a placeholder image or default image if userImage is null
-        rememberAsyncImagePainter(model = R.drawable.todo_logo)
-    }
-
     ElevatedCard(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 6.dp
@@ -124,14 +130,26 @@ fun userAvatar(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Box {
-                Image(
-                    painter = painter, contentDescription = "",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(200.dp)
-                        .clip(CircleShape)
-                        .border(3.dp, Color.Gray, CircleShape)
-                )
+                if (userImage != null){
+                    Image(
+                        painter = rememberAsyncImagePainter(model = userImage), contentDescription = "",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(200.dp)
+                            .clip(CircleShape)
+                            .border(3.dp, Color.Gray, CircleShape)
+                    )
+                }else{
+                    Image(
+                        painterResource( R.drawable.baseline_account_circle_35),
+                        contentDescription = "",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(200.dp)
+                            .clip(CircleShape)
+                            .border(3.dp, Color.Gray, CircleShape)
+                    )
+                }
                 Icon(
                     imageVector = Icons.Default.Edit,
                     contentDescription = "",
@@ -139,7 +157,11 @@ fun userAvatar(
                         .size(50.dp)
                         .background(Color.White, CircleShape)
                         .clickable {
-                            takePicture.launch(null)
+                            if (cameraPermissionGranted) {
+                                takePicture.launch(null)
+                            } else {
+                                cameraPermissionLauncher.launch(android.Manifest.permission.CAMERA)
+                            }
                         }
                         .align(Alignment.BottomEnd)
                         .padding(6.dp)
@@ -162,7 +184,8 @@ class ProfileViewModel : ViewModel() {
 
     fun updateUserImageBitmap(bitmap: Bitmap?) {
         viewModelScope.launch {
-            if(bitmap !== null){
+            if (bitmap !== null) {
+                _userImageBitmap.value?.recycle()
                 _userImageBitmap.value = bitmap
             }
         }

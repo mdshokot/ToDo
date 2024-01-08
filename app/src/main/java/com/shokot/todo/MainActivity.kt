@@ -5,21 +5,21 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.shokot.todo.navigation.AppNavigation
 import com.shokot.todo.ui.theme.ToDoTheme
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModelProvider
+import com.shokot.todo.navigation.AppNavigation
+import com.shokot.todo.presentation.GraphScreenViewModel
 import com.shokot.todo.presentation.HomeScreenViewModel
 import com.shokot.todo.presentation.TaskViewModel
 import com.shokot.todo.presentation.UserViewModel
+import com.shokot.todo.screen.main.components.home.TaskDialogViewModel
 import com.shokot.todo.utility.PreferencesKeys
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -38,31 +38,37 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             )
-
             val userViewModel by viewModels<UserViewModel>()
             val userFlow = userViewModel.getUserById(preferences.getInt(PreferencesKeys.USER_ID, 0))
             val user = userFlow.collectAsState(initial = null).value
+            val homeScreenViewModel by viewModels<HomeScreenViewModel>()
+            val taskViewModel by viewModels<TaskViewModel>()
+            val taskDialogViewModal by viewModels<TaskDialogViewModel>()
+            val graphScreenViewModel by viewModels<GraphScreenViewModel>()
+
             if(user !== null){
                 userViewModel.setMyUser(user)
             }
-            val homeScreenViewModel by viewModels<HomeScreenViewModel>()
-            val taskViewModel by viewModels<TaskViewModel>()
-
             ToDoTheme(darkTheme = themeViewModel.isDarkTheme) {
-                AppNavigation(themeViewModel,userViewModel,homeScreenViewModel,taskViewModel)
+                AppNavigation(themeViewModel,userViewModel,homeScreenViewModel,taskViewModel,taskDialogViewModal,graphScreenViewModel)
             }
         }
     }
 }
 
 class ThemeViewModel(private val preferences: SharedPreferences) : ViewModel() {
-     var isDarkTheme  by mutableStateOf(preferences.getBoolean("isDarkTheme", false))
+    private val _isDarkTheme = MutableStateFlow(preferences.getBoolean("isDarkTheme", false))
 
-    fun toggleTheme(){
+    var isDarkTheme: Boolean
+        get() = _isDarkTheme.value
+        private set(value) {
+            _isDarkTheme.value = value
+        }
+
+    fun toggleTheme() {
         isDarkTheme = !isDarkTheme
         saveThemePreference(isDarkTheme)
     }
-
     private fun saveThemePreference(isDarkTheme: Boolean) {
         preferences.edit().putBoolean("isDarkTheme", isDarkTheme).apply()
     }

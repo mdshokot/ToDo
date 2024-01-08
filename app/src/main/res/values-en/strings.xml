@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="login">Login</string>
-    <string name="register">Register</string>
+    <string name="register">REGISTER</string>
     <string name="before_logout_text">Logout from this account</string>
     <string name="invalid_email">Invalid email</string>
     <string name="before_theme_switch_text">Change theme</string>
@@ -47,6 +47,9 @@
     <string name="delete_task_body">Are you sure you want to delete the task?</string>
     <string name="delete">Delete</string>
     <string name="favorite">Favorite</string>
+    <string name="go_back">Go Back</string>
+    <string name="completed">Completed</string>
+    <string name="not_completed">Not completed</string>
     <string-array name="task_select_option">
         <item>@string/normal</item>
         <item>Value</item>

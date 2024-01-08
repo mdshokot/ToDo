@@ -19,13 +19,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.shokot.todo.ThemeViewModel
 import com.shokot.todo.navigation.graph.authenticationGraph
 import com.shokot.todo.navigation.graph.mainAppGraph
+import com.shokot.todo.presentation.GraphScreenViewModel
 import com.shokot.todo.presentation.HomeScreenViewModel
 import com.shokot.todo.presentation.TaskViewModel
 import com.shokot.todo.presentation.UserViewModel
@@ -38,9 +38,10 @@ fun AppNavigation(
     themeViewModel: ThemeViewModel,
     userViewModel: UserViewModel,
     homeScreenViewModel: HomeScreenViewModel,
-    taskViewModel: TaskViewModel
+    taskViewModel: TaskViewModel,
+    taskDialogViewModal: TaskDialogViewModel,
+    graphScreenViewModel: GraphScreenViewModel
 ) {
-
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     var selectedItemIndex by rememberSaveable { mutableStateOf(0) }
@@ -48,7 +49,6 @@ fun AppNavigation(
     val preferences: SharedPreferences =
         LocalContext.current.getSharedPreferences("ToDoPrefs", Context.MODE_PRIVATE)
 
-    val taskDialogViewModal = viewModel<TaskDialogViewModel>()
     val hasUser = preferences.contains(PreferencesKeys.USER_ID)
     Scaffold(
         bottomBar = {
@@ -57,14 +57,14 @@ fun AppNavigation(
                     Helper.bottomNavigationItems.forEachIndexed { index, item ->
                         NavigationBarItem(selected = index == selectedItemIndex,
                             onClick = {
-                                navController.navigate(item.tittle)
+                                navController.navigate(item.title)
                                 selectedItemIndex = index
                             },
-                            label = { Text(text = item.tittle.replaceFirstChar { it.uppercase() }) },
+                            label = { Text(text = item.title.replaceFirstChar { it.uppercase() }) },
                             icon = {
                                 Icon(
                                     imageVector = if (index == selectedItemIndex) item.selectedIcon else item.unselectedIcon,
-                                    contentDescription = item.tittle
+                                    contentDescription = item.title
                                 )
                             })
                     }
@@ -77,7 +77,7 @@ fun AppNavigation(
         floatingActionButton = {
             if (currentRoute == MainAppScreen.Home.route) {
                 FloatingActionButton(
-                    onClick = { taskDialogViewModal.showDialog() },
+                    onClick = { taskDialogViewModal._showModal.value = true },
                     shape = CircleShape
                 ) {
                     Icon(imageVector = Icons.Default.Add, contentDescription = "")
@@ -97,7 +97,8 @@ fun AppNavigation(
                 userViewModel,
                 taskDialogViewModal,
                 homeScreenViewModel,
-                taskViewModel
+                taskViewModel,
+                graphScreenViewModel
             )
         }
     }

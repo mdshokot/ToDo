@@ -2,6 +2,7 @@ package com.shokot.todo.screen.main
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,55 +16,56 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.shokot.todo.R
 import com.shokot.todo.domain.dao.MyTask
 import com.shokot.todo.presentation.HomeScreenViewModel
 import com.shokot.todo.presentation.TaskViewModel
-import com.shokot.todo.screen.main.components.home.CustomDropDown
+import com.shokot.todo.screen.main.components.home.DropDownUI
 import com.shokot.todo.screen.main.components.home.MyTaskCard
 import com.shokot.todo.screen.main.components.home.TaskDialog
 import com.shokot.todo.screen.main.components.home.TaskDialogViewModel
 import com.shokot.todo.utility.PreferencesKeys
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import com.shokot.todo.utility.SelectOption
 
 @Composable
 fun HomeScreen(
     navController: NavController,
-    taskViewModal: TaskDialogViewModel,
+    taskDialogViewModel: TaskDialogViewModel,
     homeScreenViewModel: HomeScreenViewModel,
     taskScreenViewModel: TaskViewModel
 ) {
-    val items = stringArrayResource(R.array.task_filter_options)
-    val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-    val preferences: SharedPreferences =
-        LocalContext.current.getSharedPreferences("ToDoPrefs", Context.MODE_PRIVATE)
-    val userId = preferences.getInt(PreferencesKeys.USER_ID, 0)
-    val myTasks  = homeScreenViewModel.getAllTaskOfUser(userId,currentDate).collectAsState(initial = emptyList()).value
-
-    //val myTasksFiltered  = homeScreenViewModel.getAllTaskByFilter(userId,currentDate,type="normal",favorite = null).collectAsState(initial = emptyList()).value
-
+    val preferences: SharedPreferences = LocalContext.current.getSharedPreferences("ToDoPrefs", Context.MODE_PRIVATE)
+    val showDialog = taskDialogViewModel._showModal.collectAsState().value
+    val defaultOption =  SelectOption("all", stringResource(id = R.string.all))
+    homeScreenViewModel.userId = preferences.getInt(PreferencesKeys.USER_ID, 0)
+     val myTasks = homeScreenViewModel.tasks.collectAsState(initial = emptyList()).value
+    val filterItems = listOf(
+        defaultOption,
+        SelectOption("normal", stringResource(id = R.string.normal)),
+        SelectOption("value", stringResource(id = R.string.task_value)),
+        SelectOption("favorite", stringResource(id = R.string.favorite)),
+    )
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .padding(10.dp)
     ) {
-        CustomDropDown(
-            textFieldLabelRes = R.string.select_label,
-            items = items,
-            selectedItem = homeScreenViewModel.selectedItem,
-            onSelectedItem = { homeScreenViewModel.setMySelectedItem(it) },
-            defaultOption = R.string.all,
+        Log.i("HOME SCREEN","home screen refresh")
+        DropDownUI(
+            options = filterItems,
+            selectedOption = homeScreenViewModel.selectedItem,
+            { it -> homeScreenViewModel.setMySelectedItem(it.option); homeScreenViewModel.setSortType(it.id)},
+            defaultOption
         )
         Spacer(modifier = Modifier.height(5.dp))
         ToDoList(myTasks,navController,taskScreenViewModel)
         //lazy column
-        if (taskViewModal.showModal) {
-            TaskDialog(taskViewModal,homeScreenViewModel)
+        if (showDialog) {
+            TaskDialog(taskDialogViewModel,homeScreenViewModel)
         }
     }
 }

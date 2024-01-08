@@ -78,8 +78,9 @@ dependencies {
 
     //chart
     implementation("co.yml:ycharts:2.1.0")
-
+    //shared preference
     implementation ("androidx.datastore:datastore-preferences:1.0.0")
+    //navigation
     implementation("androidx.navigation:navigation-compose:$nav_version")
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")

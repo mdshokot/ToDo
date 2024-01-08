@@ -4,11 +4,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 class TaskDialogViewModel : ViewModel() {
 
-    var showModal by mutableStateOf(false)
-        private set
+     var _showModal = MutableStateFlow(false)
+
+
+
     var title by mutableStateOf("")
         private set
     var description by mutableStateOf("")
@@ -20,12 +24,14 @@ class TaskDialogViewModel : ViewModel() {
     var selectedItem by mutableStateOf("")
         private set
 
-    fun showDialog() {
-        showModal = true
+
+
+    fun showDialog(){
+        _showModal.value = true
     }
 
-    fun hideDialog() {
-        showModal = false
+    fun hideDialog(){
+        _showModal.value = false
     }
 
     fun setMyTitle(title: String) {

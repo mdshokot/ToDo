@@ -2,6 +2,7 @@ package com.shokot.todo.screen.main.components.home
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -43,18 +44,19 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun TaskDialog(taskViewModal: TaskDialogViewModel, homeScreenViewModel: HomeScreenViewModel) {
+fun TaskDialog(taskDialogViewModel: TaskDialogViewModel, homeScreenViewModel: HomeScreenViewModel) {
     Dialog(onDismissRequest = {
-        taskViewModal.hideDialog()
-        taskViewModal.clearAllFields()
+        taskDialogViewModel._showModal.value = false
+        taskDialogViewModel.clearAllFields()
     }
     ) {
-        CustomDialogUI(taskViewModal, homeScreenViewModel)
+        Log.i("TASK DIALOG","ENTRO QUA DI NUOVO PER FARE IL REFRESH")
+        CustomDialogUI(taskDialogViewModel, homeScreenViewModel)
     }
 }
 
 @Composable
-fun CustomDialogUI(taskViewModal: TaskDialogViewModel, homeScreenViewModel: HomeScreenViewModel) {
+fun CustomDialogUI(taskDialogViewModel: TaskDialogViewModel, homeScreenViewModel: HomeScreenViewModel) {
     val preferences: SharedPreferences =
         LocalContext.current.getSharedPreferences("ToDoPrefs", Context.MODE_PRIVATE)
     val userId = preferences.getInt(PreferencesKeys.USER_ID, -1)
@@ -63,7 +65,7 @@ fun CustomDialogUI(taskViewModal: TaskDialogViewModel, homeScreenViewModel: Home
     val context = LocalContext.current
     val successMsg = stringResource(id = R.string.add_task_succes)
     val normalType = stringResource(id = R.string.normal)
-    taskViewModal.setMySelectedItem(normalType)
+    taskDialogViewModel.setMySelectedItem(normalType)
     ElevatedCard(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 6.dp
@@ -94,15 +96,15 @@ fun CustomDialogUI(taskViewModal: TaskDialogViewModel, homeScreenViewModel: Home
                     textFieldLabelRes = R.string.select_task_type,
                     defaultOption = R.string.normal,
                     items = items,
-                    selectedItem = taskViewModal.selectedItem,
-                    onSelectedItem = { taskViewModal.setMySelectedItem(it) }
+                    selectedItem = taskDialogViewModel.selectedItem,
+                    onSelectedItem = { taskDialogViewModel.setMySelectedItem(it) }
                 )
                 Spacer(modifier = Modifier.height(5.dp))
                 //title
                 CustomOutlinedTextField(
-                    value = taskViewModal.title,
+                    value = taskDialogViewModel.title,
                     onValueChange = {
-                        taskViewModal.setMyTitle(it)
+                        taskDialogViewModel.setMyTitle(it)
                     },
                     label = R.string.task_title,
                     icon = Icons.Default.Info,
@@ -111,9 +113,9 @@ fun CustomDialogUI(taskViewModal: TaskDialogViewModel, homeScreenViewModel: Home
                 )
                 //description
                 CustomOutlinedTextField(
-                    value = taskViewModal.description,
+                    value = taskDialogViewModel.description,
                     onValueChange = {
-                        taskViewModal.setMyDescription(it)
+                        taskDialogViewModel.setMyDescription(it)
                     },
                     label = R.string.task_descrition,
                     icon = Icons.Default.Info,
@@ -122,21 +124,21 @@ fun CustomDialogUI(taskViewModal: TaskDialogViewModel, homeScreenViewModel: Home
                 )
                 //graph name
                 CustomOutlinedTextField(
-                    value = taskViewModal.graphName,
+                    value = taskDialogViewModel.graphName,
                     onValueChange = {
-                        taskViewModal.setMyGraphName(it)
+                        taskDialogViewModel.setMyGraphName(it)
                     },
                     label = R.string.task_graph_name,
                     icon = Icons.Default.Info,
                     keyboardType = KeyboardType.Text,
                     space = 5
                 )
-                if (taskViewModal.selectedItem == stringResource(id = R.string.task_value)) {
+                if (taskDialogViewModel.selectedItem == stringResource(id = R.string.task_value)) {
                     //Value
                     CustomOutlinedTextField(
-                        value = taskViewModal.value,
+                        value = taskDialogViewModel.value,
                         onValueChange = {
-                            taskViewModal.setMyValue(it)
+                            taskDialogViewModel.setMyValue(it)
                         },
                         label = R.string.task_value,
                         icon = Icons.Default.Info,
@@ -154,8 +156,8 @@ fun CustomDialogUI(taskViewModal: TaskDialogViewModel, homeScreenViewModel: Home
             ) {
                 TextButton(
                     onClick = {
-                        taskViewModal.hideDialog()
-                        taskViewModal.clearAllFields()
+                        taskDialogViewModel.hideDialog()
+                        taskDialogViewModel.clearAllFields()
                     },
                     modifier = Modifier
                         .background(MaterialTheme.colorScheme.secondaryContainer)
@@ -174,7 +176,7 @@ fun CustomDialogUI(taskViewModal: TaskDialogViewModel, homeScreenViewModel: Home
                         //check if graph name already exists
                         coroutineScope.launch {
                             val doesGraphNameExists =
-                                homeScreenViewModel.doesGraphNameExists(graphName = taskViewModal.graphName)
+                                homeScreenViewModel.doesGraphNameExists(graphName = taskDialogViewModel.graphName)
                             doesGraphNameExists.firstOrNull()?.let {
                                 if (it) {
                                     Toast.makeText(
@@ -186,7 +188,7 @@ fun CustomDialogUI(taskViewModal: TaskDialogViewModel, homeScreenViewModel: Home
                                     handleAddTask(
                                         context,
                                         homeScreenViewModel,
-                                        taskViewModal,
+                                        taskDialogViewModel,
                                         userId,
                                         successMsg,
                                         normalType
@@ -196,7 +198,7 @@ fun CustomDialogUI(taskViewModal: TaskDialogViewModel, homeScreenViewModel: Home
                                 handleAddTask(
                                     context,
                                     homeScreenViewModel,
-                                    taskViewModal,
+                                    taskDialogViewModel,
                                     userId,
                                     successMsg,
                                     normalType
@@ -223,19 +225,19 @@ fun CustomDialogUI(taskViewModal: TaskDialogViewModel, homeScreenViewModel: Home
 private fun handleAddTask(
     context: Context,
     homeScreenViewModel: HomeScreenViewModel,
-    taskViewModal: TaskDialogViewModel,
+    taskDialogViewModel: TaskDialogViewModel,
     userId: Int,
     successMsg: String,
     normalType: String
 ) {
-    val value = taskViewModal.value.toIntOrNull()
+    val value = taskDialogViewModel.value.toIntOrNull()
     val task = Task(
-        title = taskViewModal.title,
-        description = taskViewModal.description,
+        title = taskDialogViewModel.title,
+        description = taskDialogViewModel.description,
         value = value,
         userId = userId,
-        graphName = taskViewModal.graphName,
-        type = if (taskViewModal.isNormal(normalType)) {
+        graphName = taskDialogViewModel.graphName,
+        type = if (taskDialogViewModel.isNormal(normalType)) {
             TaskType.NORMAL
         } else {
             TaskType.VALUE
@@ -243,6 +245,6 @@ private fun handleAddTask(
     )
     homeScreenViewModel.insertTask(task)
     Toast.makeText(context, successMsg, Toast.LENGTH_SHORT).show()
-    taskViewModal.hideDialog()
-    taskViewModal.clearAllFields()
+    taskDialogViewModel._showModal.value = false
+    taskDialogViewModel.clearAllFields()
 }

@@ -42,16 +42,14 @@ fun MyTaskCard(
     taskViewModal: TaskViewModel
 ) {
     val coroutineScope = rememberCoroutineScope()
-    var isSwiped by remember { mutableStateOf(myTask.completed) }
 
     val color = if (myTask.completed) {
         Color.Green
     } else {
         MaterialTheme.colorScheme.primaryContainer
     }
-    var backgroundColor by remember {
-        mutableStateOf(color)
-    }
+    var backgroundColor by mutableStateOf(color)
+
     val modify = SwipeAction(
         icon = {
         },
@@ -61,7 +59,6 @@ fun MyTaskCard(
             coroutineScope.launch {
                 taskViewModal.taskCompleted(myTask.userId, myTask.taskId)
                 backgroundColor = Color.Green
-                isSwiped = true
             }
         },
     )
@@ -72,7 +69,7 @@ fun MyTaskCard(
         shape = MaterialTheme.shapes.medium
     ) {
         SwipeableActionsBox(
-            startActions = if (isSwiped) {
+            startActions = if (myTask.completed) {
                 listOf()
             } else {
                 listOf(modify)

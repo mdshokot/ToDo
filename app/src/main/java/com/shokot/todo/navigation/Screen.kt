@@ -13,4 +13,6 @@ sealed class MainAppScreen(route: String) : Screen(route) {
     object Home : Screen("home")
     object Graph : Screen("graph")
     object Task : Screen("task")
+    object GraphPage : Screen("graphPage")
+    object PIGraphPage : Screen("PiPage")
 }
