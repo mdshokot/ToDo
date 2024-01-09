@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.shokot.todo.R
 import com.shokot.todo.navigation.Graph
+import com.shokot.todo.utility.PreferencesKeys
 
 @Composable
 fun Logout(navController: NavController, modifier: Modifier, preferences: SharedPreferences){
@@ -37,12 +38,10 @@ fun Logout(navController: NavController, modifier: Modifier, preferences: Shared
             Text(text = stringResource(id = R.string.before_logout_text))
             ElevatedButton(
                 onClick = {
-                    preferences.edit().remove("userId").apply()
+                    preferences.edit().remove(PreferencesKeys.USER_ID).apply()
                     //other things like delete the remember saving the password and email
                     navController.navigate(Graph.authentication){
-                        popUpTo(Graph.mainApp) {
-                            inclusive = true
-                        }
+
                     }
                 },
                 colors = ButtonDefaults.elevatedButtonColors(

@@ -17,7 +17,6 @@ import com.shokot.todo.screen.main.GraphScreen
 import com.shokot.todo.screen.main.HomeScreen
 import com.shokot.todo.screen.main.PiChartScreen
 import com.shokot.todo.screen.main.ProfileScreen
-import com.shokot.todo.screen.main.ProfileViewModel
 import com.shokot.todo.screen.main.TaskScreen
 import com.shokot.todo.screen.main.components.GraphPageScreen
 import com.shokot.todo.screen.main.components.home.TaskDialogViewModel
@@ -30,7 +29,6 @@ fun NavGraphBuilder.mainAppGraph(
     taskScreenViewModel: TaskViewModel,
     graphScreenViewModel: GraphScreenViewModel,
     fusedLocationClient: FusedLocationProviderClient,
-    profileViewModel: ProfileViewModel,
 ) {
     navigation(startDestination = MainAppScreen.Home.route, route = Graph.mainApp) {
         composable(route = MainAppScreen.Home.route) {
@@ -46,12 +44,10 @@ fun NavGraphBuilder.mainAppGraph(
         }
         composable(route = MainAppScreen.Profile.route) {
 
-
             ProfileScreen(
                 navController = navController,
                 userViewModel = userViewModel,
-                fusedLocationClient,
-                profileViewModel
+                fusedLocationClient
             )
         }
         composable(route = MainAppScreen.Task.route + "/{taskId}") {

@@ -57,7 +57,11 @@ fun MyTaskCard(
         isUndo = true,
         onSwipe = {
             coroutineScope.launch {
-                taskViewModal.taskCompleted(myTask.userId, myTask.taskId)
+                if(myTask.type == "value"){
+                    taskViewModal.insertInToGraph(myTask.userId, myTask.taskId)
+                }else{
+                    taskViewModal.taskCompleted(myTask.userId, myTask.taskId)
+                }
                 backgroundColor = Color.Green
             }
         },

@@ -29,7 +29,6 @@ import com.shokot.todo.presentation.GraphScreenViewModel
 import com.shokot.todo.presentation.HomeScreenViewModel
 import com.shokot.todo.presentation.TaskViewModel
 import com.shokot.todo.presentation.UserViewModel
-import com.shokot.todo.screen.main.ProfileViewModel
 import com.shokot.todo.screen.main.components.home.TaskDialogViewModel
 import com.shokot.todo.utility.Helper
 import com.shokot.todo.utility.PreferencesKeys
@@ -42,7 +41,6 @@ fun AppNavigation(
     taskDialogViewModal: TaskDialogViewModel,
     graphScreenViewModel: GraphScreenViewModel,
     fusedLocationClient: FusedLocationProviderClient,
-    profileViewModel: ProfileViewModel,
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -101,7 +99,6 @@ fun AppNavigation(
                 taskViewModel,
                 graphScreenViewModel,
                 fusedLocationClient,
-                profileViewModel
             )
         }
     }

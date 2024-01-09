@@ -17,7 +17,7 @@ import com.shokot.todo.domain.entity.User
 
 
 @Composable
-fun UserInformation(modifier: Modifier, user: User){
+fun UserInformation(modifier: Modifier, user: User) {
     ElevatedCard(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 6.dp

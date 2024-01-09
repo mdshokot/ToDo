@@ -45,4 +45,6 @@ class TaskRepository(
     fun getUserTaskById(userId: Int): List<Task> {
         return dao.getAllTaskByUserId(userId)
     }
+
+    suspend fun insertInToGraph(userId: Int, taskId: Int, currentDate: String) = dao.insertInToGraph(userId,taskId,currentDate)
 }

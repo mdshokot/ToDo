@@ -72,12 +72,10 @@ fun ProfileScreen(
     navController: NavController,
     userViewModel: UserViewModel,
     fusedLocationClient: FusedLocationProviderClient,
-    profileViewModel: ProfileViewModel,
 ) {
 
     val context = LocalContext.current
-    val preferences: SharedPreferences =
-        context.getSharedPreferences("ToDoPrefs", Context.MODE_PRIVATE)
+    val preferences = LocalContext.current.getSharedPreferences("ToDoPrefs", Context.MODE_PRIVATE)
     val user = userViewModel.getUserbyIds(preferences.getInt(PreferencesKeys.USER_ID, 0))
     var userImage by rememberSaveable { mutableStateOf(user.image) }
     var cameraPermissionGranted by remember { mutableStateOf(false) }
@@ -152,10 +150,9 @@ fun ProfileScreen(
         }
 
         Spacer(modifier = Modifier.height(20.dp))
-
-        UserInformation(modifier, user)
-
-        Spacer(modifier = Modifier.height(20.dp))
+        if (user != null) {
+            UserInformation(modifier, user)
+        }
         Spacer(modifier = Modifier.height(20.dp))
         Logout(navController, modifier, preferences)
     }
@@ -223,28 +220,14 @@ fun userAvatar(
                 )
             }
             Spacer(modifier = Modifier.height(5.dp))
+
             if (user != null) {
                 Text(
                     text = user.username,
                     style = MaterialTheme.typography.titleLarge
                 )
             }
-        }
-    }
-}
 
-
-// ProfileViewModel
-
-class ProfileViewModel : ViewModel() {
-    private val _userImageBitmap = MutableStateFlow<Bitmap?>(null)
-    val userImageBitmap = _userImageBitmap.value
-
-    fun updateUserImageBitmap(bitmap: Bitmap?) {
-        viewModelScope.launch(Dispatchers.IO) {
-            if (bitmap !== null) {
-                _userImageBitmap.value = bitmap
-            }
         }
     }
 }

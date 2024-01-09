@@ -74,7 +74,6 @@ fun HomeScreen(
             .background(MaterialTheme.colorScheme.background)
             .padding(10.dp)
     ) {
-        Log.i("HOME SCREEN","home screen refresh")
         DropDownUI(
             options = filterItems,
             selectedOption = homeScreenViewModel.selectedItem,

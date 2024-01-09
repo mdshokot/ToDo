@@ -1,7 +1,5 @@
 package com.shokot.todo
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -16,7 +14,6 @@ import com.shokot.todo.presentation.GraphScreenViewModel
 import com.shokot.todo.presentation.HomeScreenViewModel
 import com.shokot.todo.presentation.TaskViewModel
 import com.shokot.todo.presentation.UserViewModel
-import com.shokot.todo.screen.main.ProfileViewModel
 import com.shokot.todo.screen.main.components.home.TaskDialogViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -34,8 +31,6 @@ class MainActivity : ComponentActivity() {
             val taskViewModel by viewModels<TaskViewModel>()
             val taskDialogViewModal by viewModels<TaskDialogViewModel>()
             val graphScreenViewModel by viewModels<GraphScreenViewModel>()
-            val preferences: SharedPreferences = this.getSharedPreferences("ToDoPrefs", Context.MODE_PRIVATE)
-            val profileViewModel  by viewModels<ProfileViewModel>()
             ToDoTheme(darkTheme = isSystemInDarkTheme()) {
                 AppNavigation(
                     userViewModel,
@@ -43,8 +38,7 @@ class MainActivity : ComponentActivity() {
                     taskViewModel,
                     taskDialogViewModal,
                     graphScreenViewModel,
-                    fusedLocationClient,
-                    profileViewModel
+                    fusedLocationClient
                 )
             }
         }

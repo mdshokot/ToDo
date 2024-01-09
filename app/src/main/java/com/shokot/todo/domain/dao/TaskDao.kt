@@ -137,6 +137,12 @@ INNER JOIN task t ON t.id = ut.task_id
     )
     suspend fun setTaskCompleted(userId: Int, taskId: Int, currDate: String)
 
+    @Query("""
+    INSERT  INTO graph (user_id, task_id, valore, date)
+    VALUES (:userId, :taskId, (SELECT task.value FROM task  WHERE id = :taskId), :currentDate)
+""")
+    suspend fun insertInToGraph(userId: Int, taskId: Int, currentDate: String)
+
 }
 
 data class MyTask(

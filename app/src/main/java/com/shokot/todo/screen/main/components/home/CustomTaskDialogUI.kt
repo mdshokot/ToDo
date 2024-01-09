@@ -50,7 +50,6 @@ fun TaskDialog(taskDialogViewModel: TaskDialogViewModel, homeScreenViewModel: Ho
         taskDialogViewModel.clearAllFields()
     }
     ) {
-        Log.i("TASK DIALOG","ENTRO QUA DI NUOVO PER FARE IL REFRESH")
         CustomDialogUI(taskDialogViewModel, homeScreenViewModel)
     }
 }

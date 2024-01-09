@@ -81,4 +81,13 @@ class TaskViewModel @Inject constructor(
         }
     }
 
+    fun insertInToGraph(userId: Int, taskId: Int){
+        val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        viewModelScope.launch(Dispatchers.IO) {
+            taskRepository.insertInToGraph(userId, taskId, currentDate)
+        }
+    }
+
+
+
 }
