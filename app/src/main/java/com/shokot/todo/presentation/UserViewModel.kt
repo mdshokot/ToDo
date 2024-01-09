@@ -1,9 +1,6 @@
 package com.shokot.todo.presentation
 
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.shokot.todo.domain.entity.User
@@ -14,7 +11,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -23,6 +19,7 @@ class UserViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : ViewModel() {
 
+    var profileImage = MutableStateFlow<Bitmap?>(null)
     private val _user = MutableStateFlow(User(id = 0, "prova", "prova@gmail.com", "123456"))
 
     val user: StateFlow<User>
@@ -51,7 +48,12 @@ class UserViewModel @Inject constructor(
     }
 
     fun getUserById(id: Int): Flow<User?> {
+
         return userRepository.getUserById(id)
+    }
+
+    fun getUserbyIds(userId:Int):User{
+        return userRepository.getUserByIds(userId)
     }
 
     fun getUserByEmail(email: String): Flow<User> {

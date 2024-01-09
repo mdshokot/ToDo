@@ -50,6 +50,8 @@
     <string name="go_back">Go Back</string>
     <string name="completed">Completed</string>
     <string name="not_completed">Not completed</string>
+    <string name="position">Position</string>
+    <string name="check_your_position">Check your position</string>
     <string-array name="task_select_option">
         <item>@string/normal</item>
         <item>Value</item>

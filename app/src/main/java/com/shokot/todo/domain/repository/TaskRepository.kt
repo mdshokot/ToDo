@@ -33,8 +33,16 @@ class TaskRepository(
         favorite: Boolean?
     ): Flow<List<MyTask>> = dao.getAllTaskByFilter(userId, currDate, type, favorite)
 
-    fun getAllFavoriteTask(userId:Int, currDate: String): Flow<List<MyTask>> = dao.getAllFavoriteTask(userId,currDate)
-    fun getAllTaskNormalOrValue(userId: Int, type: String, currDate: String): Flow<List<MyTask>> = dao.getAllTaskNormalOrValue(userId, type, currDate)
+    fun getAllFavoriteTask(userId: Int, currDate: String): Flow<List<MyTask>> =
+        dao.getAllFavoriteTask(userId, currDate)
+
+    fun getAllTaskNormalOrValue(userId: Int, type: String, currDate: String): Flow<List<MyTask>> =
+        dao.getAllTaskNormalOrValue(userId, type, currDate)
+
     suspend fun setTaskCompleted(userId: Int, taskId: Int, currDate: String) =
         dao.setTaskCompleted(userId, taskId, currDate)
+
+    fun getUserTaskById(userId: Int): List<Task> {
+        return dao.getAllTaskByUserId(userId)
+    }
 }

@@ -59,6 +59,7 @@ android {
 }
 
 dependencies {
+    implementation("com.google.android.gms:play-services-location:21.0.1")
     val nav_version = "2.7.5"
     val room_version = "2.6.1"
     //room database
@@ -78,6 +79,10 @@ dependencies {
 
     //chart
     implementation("co.yml:ycharts:2.1.0")
+    //gps
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+    //hash password
+    implementation("androidx.security:security-crypto:1.1.0-alpha03")
     //shared preference
     implementation ("androidx.datastore:datastore-preferences:1.0.0")
     //navigation

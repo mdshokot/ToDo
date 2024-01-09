@@ -1,5 +1,6 @@
 package com.shokot.todo.presentation
 
+import android.graphics.Bitmap
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -25,12 +26,15 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
+
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
     private val taskRepository: TaskRepository,
     private val userTaskRepository: UserTaskRepository,
     private val graphRepository: GraphRepository,
 ) : ViewModel() {
+
+
     var selectedItem by mutableStateOf("")
         private set
 
@@ -48,15 +52,15 @@ class HomeScreenViewModel @Inject constructor(
             _userId.value = value
         }
 
-     val tasks : Flow<List<MyTask>> = sortType.flatMapLatest { sortType ->
-    // Replace with your actual user ID
+    val tasks: Flow<List<MyTask>> = sortType.flatMapLatest { sortType ->
+        // Replace with your actual user ID
         val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         when (sortType) {
-            "normal" -> taskRepository.getAllTaskNormalOrValue(userId,"normal",currentDate)
-            "value" -> taskRepository.getAllTaskNormalOrValue(userId,"value",currentDate)
-            "all" ->  taskRepository.getAllTaskOfUser(userId,currentDate)
-            "favorite" -> taskRepository.getAllFavoriteTask(userId,currentDate)
-            else ->  taskRepository.getAllTaskOfUser(userId,currentDate)
+            "normal" -> taskRepository.getAllTaskNormalOrValue(userId, "normal", currentDate)
+            "value" -> taskRepository.getAllTaskNormalOrValue(userId, "value", currentDate)
+            "all" -> taskRepository.getAllTaskOfUser(userId, currentDate)
+            "favorite" -> taskRepository.getAllFavoriteTask(userId, currentDate)
+            else -> taskRepository.getAllTaskOfUser(userId, currentDate)
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
@@ -67,7 +71,7 @@ class HomeScreenViewModel @Inject constructor(
     // task section
 
     fun getTaskById(id: Int): Flow<Task> {
-            return  taskRepository.getTaskById(id)
+        return taskRepository.getTaskById(id)
     }
 
     fun insertTask(task: Task) {
@@ -86,5 +90,19 @@ class HomeScreenViewModel @Inject constructor(
     // select section
     fun setMySelectedItem(selectedItem: String) {
         this.selectedItem = selectedItem
+    }
+
+    fun getUserTaskByUserIdAndDate(userId: Int, currDate: String): List<UserTask> {
+        return userTaskRepository.getUserTaskByUserIdAndDate(userId, currDate)
+    }
+
+    fun getAllTaskByUserId(userId: Int): List<Task> {
+        return taskRepository.getUserTaskById(userId)
+    }
+
+    fun insertUserTask(userTask: UserTask){
+        viewModelScope.launch(Dispatchers.IO) {
+            userTaskRepository.insertUserTask(userTask)
+        }
     }
 }

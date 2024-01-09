@@ -22,25 +22,27 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.shokot.todo.ThemeViewModel
+import com.google.android.gms.location.FusedLocationProviderClient
 import com.shokot.todo.navigation.graph.authenticationGraph
 import com.shokot.todo.navigation.graph.mainAppGraph
 import com.shokot.todo.presentation.GraphScreenViewModel
 import com.shokot.todo.presentation.HomeScreenViewModel
 import com.shokot.todo.presentation.TaskViewModel
 import com.shokot.todo.presentation.UserViewModel
+import com.shokot.todo.screen.main.ProfileViewModel
 import com.shokot.todo.screen.main.components.home.TaskDialogViewModel
 import com.shokot.todo.utility.Helper
 import com.shokot.todo.utility.PreferencesKeys
 
 @Composable
 fun AppNavigation(
-    themeViewModel: ThemeViewModel,
     userViewModel: UserViewModel,
     homeScreenViewModel: HomeScreenViewModel,
     taskViewModel: TaskViewModel,
     taskDialogViewModal: TaskDialogViewModel,
-    graphScreenViewModel: GraphScreenViewModel
+    graphScreenViewModel: GraphScreenViewModel,
+    fusedLocationClient: FusedLocationProviderClient,
+    profileViewModel: ProfileViewModel,
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -93,12 +95,13 @@ fun AppNavigation(
             authenticationGraph(navController, userViewModel)
             mainAppGraph(
                 navController,
-                themeViewModel,
                 userViewModel,
                 taskDialogViewModal,
                 homeScreenViewModel,
                 taskViewModel,
-                graphScreenViewModel
+                graphScreenViewModel,
+                fusedLocationClient,
+                profileViewModel
             )
         }
     }

@@ -17,15 +17,14 @@ import co.yml.charts.ui.piechart.models.PieChartData
 fun CustomPiChart( completed:Int, notCompleted:Int) {
     val donutChartData = PieChartData(
         slices = listOf(
-            PieChartData.Slice("not completed", notCompleted.toFloat(), Color(0xFF5D615E)),
-            PieChartData.Slice("completed", completed.toFloat(), Color(0xFF20BF55)),
+            PieChartData.Slice("", notCompleted.toFloat(), Color(0xFF5D615E)),
+            PieChartData.Slice("", completed.toFloat(), Color(0xFF20BF55)),
         ),
         PlotType.Pie
     )
 
     val pieChartConfig = PieChartConfig(
         isAnimationEnable = false,
-        showSliceLabels = true,
         animationDuration = 1500
     )
 

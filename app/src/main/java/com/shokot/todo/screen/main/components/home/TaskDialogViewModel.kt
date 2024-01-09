@@ -10,9 +10,6 @@ import kotlinx.coroutines.flow.StateFlow
 class TaskDialogViewModel : ViewModel() {
 
      var _showModal = MutableStateFlow(false)
-
-
-
     var title by mutableStateOf("")
         private set
     var description by mutableStateOf("")

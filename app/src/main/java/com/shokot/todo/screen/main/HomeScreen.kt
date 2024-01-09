@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -21,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.shokot.todo.R
 import com.shokot.todo.domain.dao.MyTask
+import com.shokot.todo.domain.entity.UserTask
 import com.shokot.todo.presentation.HomeScreenViewModel
 import com.shokot.todo.presentation.TaskViewModel
 import com.shokot.todo.screen.main.components.home.DropDownUI
@@ -29,6 +31,8 @@ import com.shokot.todo.screen.main.components.home.TaskDialog
 import com.shokot.todo.screen.main.components.home.TaskDialogViewModel
 import com.shokot.todo.utility.PreferencesKeys
 import com.shokot.todo.utility.SelectOption
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun HomeScreen(
@@ -38,9 +42,25 @@ fun HomeScreen(
     taskScreenViewModel: TaskViewModel
 ) {
     val preferences: SharedPreferences = LocalContext.current.getSharedPreferences("ToDoPrefs", Context.MODE_PRIVATE)
+    val userId = preferences.getInt(PreferencesKeys.USER_ID, 0)
+    LaunchedEffect(Unit){
+        preferences.getInt(PreferencesKeys.USER_ID, 0)
+        val tasks = homeScreenViewModel.getAllTaskByUserId(userId)
+        if(tasks.isNotEmpty()){
+            val currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+            val userTasks = homeScreenViewModel.getUserTaskByUserIdAndDate(userId,currentDate)
+            if(userTasks.isEmpty()){
+                for (task in tasks) {
+                    val myTask = UserTask(userId = userId, taskId =  task.id)
+                    homeScreenViewModel.insertUserTask(myTask)
+                }
+            }
+        }
+    }
+
     val showDialog = taskDialogViewModel._showModal.collectAsState().value
     val defaultOption =  SelectOption("all", stringResource(id = R.string.all))
-    homeScreenViewModel.userId = preferences.getInt(PreferencesKeys.USER_ID, 0)
+    homeScreenViewModel.userId = userId
      val myTasks = homeScreenViewModel.tasks.collectAsState(initial = emptyList()).value
     val filterItems = listOf(
         defaultOption,

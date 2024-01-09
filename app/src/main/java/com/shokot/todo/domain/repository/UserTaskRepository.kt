@@ -15,4 +15,7 @@ class UserTaskRepository(
 
     suspend fun getUserTaskById(id: Int): UserTask? = dao.getUserTaskById(id)
 
+     fun getUserTaskByUserIdAndDate(userId: Int, currentDate: String): List<UserTask> = dao.getUserTaskByUserIdAndDate(userId,currentDate)
+
+
 }

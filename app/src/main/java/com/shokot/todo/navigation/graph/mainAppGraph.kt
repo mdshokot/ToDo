@@ -1,13 +1,12 @@
 package com.shokot.todo.navigation.graph
 
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navigation
-import com.shokot.todo.ThemeViewModel
+import com.google.android.gms.location.FusedLocationProviderClient
 import com.shokot.todo.navigation.Graph
 import com.shokot.todo.navigation.MainAppScreen
 import com.shokot.todo.presentation.GraphScreenViewModel
@@ -18,20 +17,21 @@ import com.shokot.todo.screen.main.GraphScreen
 import com.shokot.todo.screen.main.HomeScreen
 import com.shokot.todo.screen.main.PiChartScreen
 import com.shokot.todo.screen.main.ProfileScreen
+import com.shokot.todo.screen.main.ProfileViewModel
 import com.shokot.todo.screen.main.TaskScreen
 import com.shokot.todo.screen.main.components.GraphPageScreen
 import com.shokot.todo.screen.main.components.home.TaskDialogViewModel
 
 fun NavGraphBuilder.mainAppGraph(
     navController: NavController,
-    themeViewModel: ThemeViewModel,
     userViewModel: UserViewModel,
     taskDialogViewModel: TaskDialogViewModel,
     homeScreenViewModel: HomeScreenViewModel,
     taskScreenViewModel: TaskViewModel,
     graphScreenViewModel: GraphScreenViewModel,
+    fusedLocationClient: FusedLocationProviderClient,
+    profileViewModel: ProfileViewModel,
 ) {
-
     navigation(startDestination = MainAppScreen.Home.route, route = Graph.mainApp) {
         composable(route = MainAppScreen.Home.route) {
             HomeScreen(
@@ -45,9 +45,13 @@ fun NavGraphBuilder.mainAppGraph(
             GraphScreen(navController = navController, graphScreenViewModel)
         }
         composable(route = MainAppScreen.Profile.route) {
+
+
             ProfileScreen(
-                navController = navController, themeViewModel = themeViewModel,
-                userViewModel = userViewModel
+                navController = navController,
+                userViewModel = userViewModel,
+                fusedLocationClient,
+                profileViewModel
             )
         }
         composable(route = MainAppScreen.Task.route + "/{taskId}") {

@@ -52,6 +52,8 @@
     <string name="go_back">Ritorna indietro</string>
     <string name="completed">Completato</string>
     <string name="not_completed">Non completati</string>
+    <string name="position">Posizione</string>
+    <string name="check_your_position">Guarda la tua posizione</string>
     <!-- Task add dropdown menu options -->
     <string-array name="task_select_option">
         <item>@string/normal</item>

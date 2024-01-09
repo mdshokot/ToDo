@@ -1,5 +1,9 @@
 package com.shokot.todo.utility
 
+import android.content.Context
+import android.content.SharedPreferences
+import android.security.keystore.KeyGenParameterSpec
+import android.security.keystore.KeyProperties
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Spacer
@@ -27,9 +31,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.security.crypto.MasterKey
 import com.shokot.todo.R
 import com.shokot.todo.navigation.BottomNavigationItem
 import com.shokot.todo.navigation.MainAppScreen
+import javax.crypto.KeyGenerator
 
 
 object Helper {
@@ -107,4 +113,51 @@ object Helper {
 
         Spacer(modifier = Modifier.height(space.dp))
     }
+}
+fun createOrLoadMasterKey(context: Context): MasterKey {
+    val preferences: SharedPreferences =
+        context.getSharedPreferences("ToDoPrefs", Context.MODE_PRIVATE)
+
+    return if (!preferences.getBoolean("masterKeySaved", false)) {
+        // MasterKey not saved yet, create and save it
+        val masterKey = createMasterKey(context)
+        saveMasterKey(masterKey, context)
+        preferences.edit().putBoolean("masterKeySaved", true).apply()
+        masterKey
+    } else {
+        // MasterKey already saved, retrieve it
+        getMasterKey(context)
+    }
+}
+
+private fun saveMasterKey(masterKey: MasterKey, context: Context) {
+    // Here, you would typically save the masterKey to a secure storage like EncryptedSharedPreferences
+    // However, since EncryptedSharedPreferences requires a MasterKey, you need to save it initially in a different way.
+
+    // For the purpose of this example, we'll generate and store a cryptographic key using the Android Keystore.
+    val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore")
+    val keyGenParameterSpec = KeyGenParameterSpec.Builder(
+        "key_for_encrypt",
+        KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+    )
+        .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+        .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+        .setKeySize(256)
+        .setRandomizedEncryptionRequired(false)
+        .build()
+
+    keyGenerator.init(keyGenParameterSpec)
+    keyGenerator.generateKey()
+}
+
+private fun createMasterKey(context: Context): MasterKey {
+    return MasterKey.Builder(context)
+        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+        .build()
+}
+
+private fun getMasterKey(context: Context): MasterKey {
+    return MasterKey.Builder(context)
+        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+        .build()
 }

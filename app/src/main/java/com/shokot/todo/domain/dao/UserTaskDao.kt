@@ -23,4 +23,7 @@ interface UserTaskDao {
     @Query("SELECT * FROM user_task WHERE id = :id")
     suspend fun getUserTaskById(id: Int): UserTask?
 
+    @Query("SELECT * FROM user_task WHERE user_id = :userId AND date = :currentDate")
+     fun getUserTaskByUserIdAndDate(userId: Int, currentDate: String): List<UserTask>
+
 }

@@ -14,4 +14,5 @@ class UserRepository(
     fun getUserByEmail(email: String) : Flow<User> = dao.getUserByEmail(email)
 
     fun doesEmailExists(email: String): Flow<Boolean> = dao.doesEmailExists(email)
+  fun getUserByIds(userId: Int):User  = dao.getUserByIds(userId)
 }

@@ -29,7 +29,7 @@ object AppModule {
             context,
             TodoDatabase::class.java,
             "local_db"
-        ).fallbackToDestructiveMigration().build()
+        ).fallbackToDestructiveMigration().allowMainThreadQueries().build()
     }
 
     // user
